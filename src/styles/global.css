@@ -1,0 +1,320 @@
+:root {
+  /* palette — pure black with Love Poured Out powder blue */
+  --bg: #000000;          /* page — pure black so the logo badge blends seamlessly */
+  --panel: #0e141c;       /* card / image surfaces, subtly lifted */
+  --blue: #9cbce0;        /* primary powder blue — headings, linework, accents */
+  --blue-bright: #c3dbf5; /* emphasis — prices, hover */
+  --blue-deep: #6e90bc;   /* secondary blue — small marks, meta */
+  --text: #c4d4e8;        /* body text, soft blue-white */
+  --muted: #8098b8;       /* descriptions, captions */
+  --line: rgba(156, 188, 224, 0.22); /* hairline blue rules & borders */
+
+  --display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --script: 'Great Vibes', 'Segoe Script', cursive;
+  --body: 'EB Garamond', Georgia, serif;
+
+  --maxw: 1080px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 1.25rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img { max-width: 100%; display: block; }
+
+/* small decorative divider: hairline — heart — hairline -------------------- */
+.rule-heart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  color: var(--blue-deep);
+}
+.rule-heart::before,
+.rule-heart::after {
+  content: '';
+  height: 1px;
+  width: clamp(2rem, 12vw, 5rem);
+  background: var(--line);
+}
+
+/* ---- home hero (typographic wordmark) ------------------------------------ */
+.hero {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: clamp(2.4rem, 7vw, 4rem) 1.5rem 1.5rem;
+  text-align: center;
+}
+.hero__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 4vw, 2.2rem);
+  flex-wrap: wrap;
+}
+.hero__logo {
+  flex: 0 0 auto;
+  width: clamp(112px, 22vw, 168px);
+  height: auto;
+}
+.hero__wordmark { text-align: left; }
+.hero__love {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: clamp(2.4rem, 8vw, 4.2rem);
+  line-height: 1;
+  color: var(--blue);
+}
+.hero__script {
+  margin: -0.12em 0 0; /* sit just below the bottom of "Love", no overlap */
+  font-family: var(--script);
+  font-weight: 400;    /* lighter than Love */
+  font-size: clamp(2.6rem, 9vw, 4.7rem);
+  line-height: 1;
+  color: var(--blue);
+}
+.hero__verse {
+  margin: 1rem 0 0;
+  font-family: var(--body);
+  font-style: italic;
+  font-size: 1.0rem;
+  color: var(--muted);
+}
+.hero__tag {
+  margin: 0.7rem auto 0;
+  max-width: 30ch;
+  font-family: var(--display);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.17em;
+  font-size: clamp(0.78rem, 2.4vw, 1.1rem);
+  line-height: 1.7;
+  color: var(--blue);
+}
+
+/* ---- section head -------------------------------------------------------- */
+.section-head {
+  max-width: var(--maxw);
+  margin: 2.6rem auto 0;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+.section-head__title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: clamp(1.15rem, 3.5vw, 1.6rem);
+  color: var(--blue);
+}
+.section-head__title span { color: var(--blue-deep); font-size: 0.8em; }
+.section-head__count {
+  margin: 0.5rem 0 0;
+  font-family: var(--body);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* ---- grid ---------------------------------------------------------------- */
+.grid {
+  max-width: var(--maxw);
+  margin: 1.6rem auto 4rem;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2.4rem 1.8rem;
+}
+
+.empty {
+  max-width: var(--maxw);
+  margin: 2rem auto 4rem;
+  padding: 0 1.5rem;
+  text-align: center;
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* ---- footer -------------------------------------------------------------- */
+.site-foot { border-top: 1px solid var(--line); margin-top: 1rem; }
+.site-foot__inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 2.4rem 1.5rem 3rem;
+  text-align: center;
+}
+.site-foot__mission {
+  margin: 0 auto;
+  max-width: 42ch;
+  font-family: var(--display);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.82rem;
+  line-height: 1.9;
+  color: var(--muted);
+}
+.site-foot__thanks {
+  margin: 1.4rem 0 0.2rem;
+  font-family: var(--script);
+  font-size: clamp(1.7rem, 5vw, 2.3rem);
+  line-height: 1;
+  color: var(--blue);
+}
+.site-foot__meta {
+  margin: 0.6rem 0 0;
+  font-family: var(--body);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.site-foot__meta a { color: var(--blue-deep); text-underline-offset: 3px; }
+
+/* ---- primary nav header -------------------------------------------------- */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.nav__inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0.7rem 1.5rem;
+  display: flex;
+  align-items: center;   /* now centers the logo against the whole stack's height */
+  gap: 1.4rem;
+}
+.nav__logo { flex: 0 0 auto; line-height: 0; }
+.nav__logo img { width: 60px; height: auto; }
+.nav__stack {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;   /* links + button both flush right */
+  gap: 0.4rem;                  /* ← removes the padding between the first row and the button */
+}
+.nav__links {
+  display: flex;
+  align-self: stretch;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem 1.4rem;
+}
+.nav__link {
+  font-family: var(--display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 1.0rem;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+a.nav__link:hover { color: var(--blue); }
+.nav__link.is-active { color: var(--blue); }
+.nav__link.is-disabled { color: color-mix(in srgb, var(--muted) 42%, transparent); cursor: default; }
+.nav__cta {
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-family: var(--display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 1.0rem;
+  color: #05070b;
+  background: var(--blue);
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+a.nav__cta:hover { background: var(--blue-bright); transform: translateY(-1px); }
+.nav__cta.is-disabled { opacity: 0.6; cursor: default; }
+
+@media (max-width: 720px) {
+  .nav__inner { flex-direction: column; gap: 0.6rem; }
+  .nav__stack { align-items: center; }
+  .nav__links { justify-content: center; }
+}
+
+/* ---- section navigation (home) ------------------------------------------- */
+.section-nav {
+  max-width: var(--maxw);
+  margin: 2rem auto 3rem;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.4rem;
+}
+.nav-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.6rem 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  text-decoration: none;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+a.nav-card:hover {
+  border-color: color-mix(in srgb, var(--blue) 55%, transparent);
+  transform: translateY(-3px);
+}
+.nav-card__name {
+  font-family: var(--display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 1.25rem;
+  color: var(--blue);
+}
+.nav-card__desc { color: var(--muted); font-size: 1.1rem; line-height: 1.5; }
+.nav-card__go {
+  margin-top: 0.3rem;
+  font-family: var(--display);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 1.1rem;
+  color: var(--blue-bright);
+}
+.nav-card--soon { opacity: 0.55; }
+.nav-card--soon .nav-card__go { color: var(--blue-deep); }
+
+/* ---- back link ----------------------------------------------------------- */
+.back {
+  max-width: var(--maxw);
+  margin: 0 auto 3.5rem;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+.back a {
+  font-family: var(--display);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+  color: var(--blue-deep);
+  text-decoration: none;
+}
+.back a:hover { color: var(--blue); }

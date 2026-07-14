@@ -1,0 +1,17 @@
+---
+import { site } from '../site.config';
+---
+<footer class="site-foot">
+  <div class="site-foot__inner">
+    <p class="site-foot__mission">{site.mission}</p>
+    <p class="site-foot__thanks">Thank you</p>
+    <p class="site-foot__meta">
+      For supporting our mission
+      {site.hours && <> · {site.hours}</>}
+      {site.address && <> · {site.address}</>}
+      <br />
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+      {site.domain && <> · {site.domain}</>}
+    </p>
+  </div>
+</footer>

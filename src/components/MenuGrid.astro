@@ -1,0 +1,41 @@
+---
+import DrinkCard from './DrinkCard.astro';
+
+interface Drink {
+  name: string;
+  description?: string;
+  price?: string;
+  image?: string;
+  seasonal?: boolean;
+  order?: number;
+  available?: boolean;
+}
+interface Props {
+  title: string;
+  drinks: Drink[];
+}
+const { title, drinks } = Astro.props;
+---
+<div class="section-head">
+  <p class="section-head__title"><span>♡</span> {title} <span>♡</span></p>
+  <p class="section-head__count">
+    {drinks.length} {drinks.length === 1 ? 'drink' : 'drinks'} available today
+  </p>
+</div>
+
+{drinks.length === 0 ? (
+  <p class="empty">This menu is being updated — check back in a moment.</p>
+) : (
+  <section class="grid">
+    {drinks.map((d, i) => (
+      <DrinkCard
+        name={d.name}
+        description={d.description}
+        price={d.price}
+        image={d.image}
+        seasonal={d.seasonal}
+        index={i}
+      />
+    ))}
+  </section>
+)}

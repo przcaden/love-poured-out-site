@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" role="img" aria-label="Living Water Lemonade">
+  <rect width="600" height="450" fill="#0e141c"/>
+  <g fill="none" stroke="#9cbce0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- straw -->
+    <path d="M322 128 L 338 168 L 306 214"/>
+    <!-- dome lid -->
+    <path d="M232 236 Q 300 190 368 236"/>
+    <ellipse cx="300" cy="236" rx="78" ry="12"/>
+    <!-- tapered cup -->
+    <path d="M234 244 L 252 388 Q 255 398 300 398 Q 345 398 348 388 L 366 244"/>
+    <!-- bubbles -->
+    <circle cx="284" cy="312" r="7"/>
+    <circle cx="314" cy="336" r="6"/>
+    <circle cx="292" cy="360" r="5"/>
+  </g>
+</svg>

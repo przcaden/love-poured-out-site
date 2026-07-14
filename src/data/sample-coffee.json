@@ -1,0 +1,62 @@
+[
+  {
+    "id": "sample-latte",
+    "name": "Latte",
+    "description": "Espresso and steamed milk — smooth, warm, and comforting.",
+    "price": "4.75",
+    "order": 10,
+    "available": true,
+    "seasonal": false,
+    "image": "/samples/coffee-mug.svg"
+  },
+  {
+    "id": "sample-cappuccino",
+    "name": "Cappuccino",
+    "description": "Equal parts espresso, steamed milk, and airy foam.",
+    "price": "4.50",
+    "order": 20,
+    "available": true,
+    "seasonal": false,
+    "image": "/samples/coffee-espresso.svg"
+  },
+  {
+    "id": "sample-caramel-macchiato",
+    "name": "Caramel Macchiato",
+    "description": "Vanilla, steamed milk, and espresso finished with a caramel drizzle.",
+    "price": "5.25",
+    "order": 30,
+    "available": true,
+    "seasonal": false,
+    "image": "/samples/coffee-mug.svg"
+  },
+  {
+    "id": "sample-mocha",
+    "name": "Mocha",
+    "description": "Espresso and steamed milk with rich chocolate.",
+    "price": "5.00",
+    "order": 40,
+    "available": true,
+    "seasonal": false,
+    "image": "/samples/coffee-mug.svg"
+  },
+  {
+    "id": "sample-honey-cinnamon-latte",
+    "name": "Honey Cinnamon Latte",
+    "description": "A latte sweetened with our house honey cinnamon syrup.",
+    "price": "5.25",
+    "order": 50,
+    "available": true,
+    "seasonal": true,
+    "image": "/samples/coffee-espresso.svg"
+  },
+  {
+    "id": "sample-cold-brew",
+    "name": "Cold Brew",
+    "description": "Steeped slow for a smooth, bold, low-acidity cup over ice.",
+    "price": "4.75",
+    "order": 60,
+    "available": true,
+    "seasonal": false,
+    "image": "/samples/coffee-iced.svg"
+  }
+]

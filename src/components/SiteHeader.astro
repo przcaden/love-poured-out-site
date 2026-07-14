@@ -1,0 +1,34 @@
+---
+import { site, nav, social } from '../site.config';
+
+// Normalize the current path (drop trailing slash) for active-link matching.
+const path = (Astro.url.pathname.replace(/\/+$/, '') || '/');
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+<header class="nav">
+  <div class="nav__inner">
+    <a class="nav__logo" href="/" aria-label={`${site.name} — home`}>
+      <img src="/logo.png" alt={site.name} width="52" height="52" />
+    </a>
+
+    <nav class="nav__links" aria-label="Primary">
+      {nav.map((item) =>
+        item.href ? (
+          <a
+            class:list={['nav__link', isActive(item.href) && 'is-active']}
+            href={item.href}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >{item.label}</a>
+        ) : (
+          <span class="nav__link is-disabled" aria-disabled="true">{item.label}</span>
+        )
+      )}
+    </nav>
+
+    {social ? (
+      <a class="nav__cta" href={social} target="_blank" rel="noopener noreferrer">Follow Our Journey</a>
+    ) : (
+      <span class="nav__cta is-disabled" aria-disabled="true" title="Coming soon">Follow Our Journey</span>
+    )}
+  </div>
+</header>
