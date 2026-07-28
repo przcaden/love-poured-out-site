@@ -15,7 +15,7 @@
   {
     "id": "sample-banana-split",
     "name": "Banana Split",
-    "collection": "",
+    "collection": "Light of the World Collection",
     "roast": "Light",
     "description": "Smooth, bright, and filled with sweet dessert-inspired notes. Perfect for those who enjoy a sweet twist to their morning coffee.",
     "price": "4.75",
@@ -28,7 +28,7 @@
   {
     "id": "sample-brown-sugar-cinnamon",
     "name": "Brown Sugar Cinnamon",
-    "collection": "",
+    "collection": "Day 6 Collection",
     "roast": "Medium",
     "description": "A cozy blend of brown sugar sweetness and warm cinnamon spice. Comforting, smooth, and full of love!",
     "price": "4.50",
@@ -41,7 +41,7 @@
   {
     "id": "sample-maple-bourbon",
     "name": "Maple Bourbon",
-    "collection": "",
+    "collection": "Day 6 Collection",
     "roast": "Medium",
     "description": "Smooth maple sweetness with a touch of warmth and depth. Pure comfort in every sip. (Non-Alcoholic)",
     "price": "5.00",
@@ -54,7 +54,7 @@
   {
     "id": "sample-toasted-pecan",
     "name": "Toasted Pecan",
-    "collection": "",
+    "collection": "Prodigal Collection",
     "roast": "Dark",
     "description": "Rich, nutty, and perfectly roasted. Toasted pecan flavor with a bold, smooth finish you'll love.",
     "price": "5.25",
@@ -67,7 +67,7 @@
   {
     "id": "sample-roasted-hazelnut",
     "name": "Roasted Hazelnut",
-    "collection": "Flavor Reveal #1",
+    "collection": "Prodigal Collection",
     "roast": "Dark",
     "description": "Deep, smooth, and indulgent with the rich taste of roasted hazelnut. A timeless classic in every cup!",
     "price": "5.25",
