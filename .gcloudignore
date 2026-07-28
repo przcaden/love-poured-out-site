@@ -1,0 +1,7 @@
+# Container should not ever use these
+.git/
+node_modules/
+.env
+
+# Optional, but keeps the upload small
+src/
