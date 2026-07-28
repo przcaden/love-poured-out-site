@@ -60,13 +60,16 @@ page reads a table named `Coffees`. Give every table these fields:
 
 | Field         | Type             | Purpose                                            |
 | ------------- | ---------------- | -------------------------------------------------- |
-| `Name`        | Single line      | Drink name (required — blank rows are skipped)      |
-| `Description` | Long text        | Short description shown under the name             |
-| `Price`       | Currency or text | `4.50` shows as `$4.50`; free text shows as typed  |
-| `Photo`       | Attachment       | One image per drink                                |
-| `Order`       | Number           | Lower numbers first (fallback ordering)            |
-| `Available`   | Checkbox         | Unchecked = hidden from the site (a soft "remove") |
-| `Seasonal`    | Checkbox         | Adds a small "Seasonal" tag to the card            |
+| `Name`         | Single line      | Drink name (required — blank rows are skipped)      |
+| `Collection`   | Single line      | Series label shown in script above the name, e.g. `Flavor Reveal #2` (optional) |
+| `Roast`        | Single line      | `Light`, `Medium`, or `Dark` — shows a label + filled bean pips (optional) |
+| `Description`  | Long text        | Short description shown under the name             |
+| `Release Date` | Single line TEXT | Free-text label, e.g. `Coming Fall 2026`. Use a **text** field, not a Date field (optional) |
+| `Price`        | Currency or text | `4.50` shows as `$4.50`; free text shows as typed. Leave blank for coming-soon items |
+| `Photo`        | Attachment       | One image per drink                                |
+| `Order`        | Number           | Lower numbers first (fallback ordering)            |
+| `Available`    | Checkbox         | Unchecked = hidden from the site (a soft "remove") |
+| `Seasonal`     | Checkbox         | Adds a small "Seasonal" tag to the card            |
 
 **Reordering:** records are pulled in the order of the Airtable **view** named in
 `AIRTABLE_VIEW` (default `Grid view`). Name that view the same in every table,

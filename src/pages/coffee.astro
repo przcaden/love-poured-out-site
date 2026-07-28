@@ -14,7 +14,7 @@ const drinks = (await getCollection('coffee'))
 <Base title={`Coffees · ${site.name}`}>
   <SiteHeader />
   <main>
-    <MenuGrid title="Coffees" drinks={drinks} />
+    <MenuGrid title="Coffees" drinks={drinks} dualImage={true} />
   </main>
   <SiteFooter />
 </Base>

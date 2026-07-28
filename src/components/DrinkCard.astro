@@ -5,9 +5,24 @@ interface Props {
   price?: string;
   image?: string;
   seasonal?: boolean;
+  roast?: string;
+  collection?: string;
+  releaseDate?: string;
+  dualImage?: boolean;
   index?: number;
 }
-const { name, description = '', price = '', image = '', seasonal = false, index = 0 } = Astro.props;
+const {
+  name,
+  description = '',
+  price = '',
+  image = '',
+  seasonal = false,
+  roast = '',
+  collection = '',
+  releaseDate = '',
+  dualImage = false,
+  index = 0,
+} = Astro.props;
 
 // Owners can type "$4.50", "4.5", or "Market" — show a bare number as currency,
 // otherwise print exactly what they wrote.
@@ -16,115 +31,398 @@ function formatPrice(p: string): string {
   const n = Number(p);
   return Number.isFinite(n) && p.trim() !== '' ? `$${n.toFixed(2)}` : p;
 }
+
+// Roast → a label plus a 1–3 "darkness" level for the little bean pips.
+// "Light" → 1 filled, "Medium" → 2, "Dark" → 3. Owner can type any of those.
+const roastRaw = roast.trim();
+const roastKey = roastRaw.toLowerCase();
+const roastLevel = roastKey.startsWith('dark') ? 3 : roastKey.startsWith('med') ? 2 : roastRaw ? 1 : 0;
+const roastLabel = roastRaw ? (/roast/i.test(roastRaw) ? roastRaw : `${roastRaw} Roast`) : '';
+
+const modalId = `drink-modal-${index}`;
+const titleId = `drink-title-${index}`;
+
+// Coffees ship a hot + iced pair. The iced image is derived from the hot image by
+// swapping the "-hot" suffix for "-ice" (e.g. cookie-butter-latte-hot.png →
+// cookie-butter-latte-ice.png). If the image doesn't use that convention, or this
+// isn't a dual-image page, the popup just shows the single image.
+const icedImage = image.replace(/-hot(\.\w+)$/i, '-ice$1');
+const hasIced = icedImage !== image;
+const showPair = dualImage && !!image && hasIced;
 ---
 
 <article class="card" style={`--i:${index}`}>
+  {/*
+    The whole card is a single trigger that opens the popup. It's a sibling button
+    stretched over the card (rather than wrapping the content) so the heading stays a
+    real <h3> and the image stays a real <img> — a <button> can't contain those.
+    The popup is a native <dialog>: it gives us Esc-to-close, a backdrop, focus
+    trapping and focus-return for free. The dialog's CONTENTS are a plain placeholder
+    for now — we design those in the next step; the plumbing is already done.
+  */}
+  <button
+    class="card__open"
+    type="button"
+    aria-haspopup="dialog"
+    aria-controls={modalId}
+    aria-label={`View details for ${name}`}
+  ></button>
+
+  {releaseDate && <span class="card__release">{releaseDate}</span>}
+
   {image && (
     <div class="card__media">
       <img src={image} alt={name} loading="lazy" width="600" height="450" />
-      {seasonal && <span class="card__tag">♡ Seasonal</span>}
     </div>
   )}
 
-  <div class="card__line">
-    <h3 class="card__name"><span class="card__heart" aria-hidden="true">♡</span>{name}</h3>
-    <span class="card__leader" aria-hidden="true"></span>
+  <h3 class="card__name">{name}</h3>
+
+  <div class="card__meta">
+    {roastLabel && (
+      <p class="card__roast">
+        <span class="card__pips" aria-hidden="true">
+          <span class:list={['pip', roastLevel >= 1 && 'is-on']}></span>
+          <span class:list={['pip', roastLevel >= 2 && 'is-on']}></span>
+          <span class:list={['pip', roastLevel >= 3 && 'is-on']}></span>
+        </span>
+        {roastLabel}
+      </p>
+    )}
     {price && <span class="card__price">{formatPrice(price)}</span>}
   </div>
 
-  {description && <p class="card__desc">{description}</p>}
+  {/* ===== popup — placeholder layout, to be designed in the next step ===== */}
+  <dialog id={modalId} class:list={['drink-modal', showPair && 'drink-modal--pair']} aria-labelledby={titleId}>
+    <div class="drink-modal__inner">
+      <button class="drink-modal__close" type="button" aria-label="Close details">&times;</button>
+
+      {image && (
+        <div class:list={['drink-modal__media-row', showPair && 'drink-modal__media-row--pair']}>
+          {showPair ? (
+            <>
+              <figure class="drink-modal__figure">
+                <div class="drink-modal__media"><img src={image} alt={`${name}, hot`} /></div>
+                <figcaption class="drink-modal__figcap">Hot</figcaption>
+              </figure>
+              <figure class="drink-modal__figure">
+                <div class="drink-modal__media"><img src={icedImage} alt={`${name}, iced`} /></div>
+                <figcaption class="drink-modal__figcap">Iced</figcaption>
+              </figure>
+            </>
+          ) : (
+            <figure class="drink-modal__figure">
+              <div class="drink-modal__media"><img src={image} alt={name} /></div>
+            </figure>
+          )}
+        </div>
+      )}
+
+      {collection && <p class="drink-modal__collection">{collection}</p>}
+      <h3 id={titleId} class="drink-modal__name">{name}</h3>
+
+      <div class="drink-modal__meta">
+        {roastLabel && (
+          <p class="drink-modal__roast">
+            <span class="card__pips" aria-hidden="true">
+              <span class:list={['pip', roastLevel >= 1 && 'is-on']}></span>
+              <span class:list={['pip', roastLevel >= 2 && 'is-on']}></span>
+              <span class:list={['pip', roastLevel >= 3 && 'is-on']}></span>
+            </span>
+            {roastLabel}
+          </p>
+        )}
+        {price && <span class="drink-modal__price">{formatPrice(price)}</span>}
+      </div>
+
+      {description && <p class="drink-modal__desc">{description}</p>}
+      {seasonal && <p class="drink-modal__flag">&#9825; Seasonal favourite</p>}
+      {releaseDate && <p class="drink-modal__flag">{releaseDate}</p>}
+    </div>
+  </dialog>
 </article>
 
 <style>
-  .card { display: flex; flex-direction: column; }
-
-  .card__media {
-    position: relative;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    border-radius: 12px;
-    background: var(--panel);
-    border: 1px solid var(--line);
+  /* ===== summary card ===== */
+  .card {
+    position: relative;              /* anchor for the stretched trigger button */
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 1.25rem;
+    border-radius: 20px;
+    cursor: pointer;
+    background: color-mix(in srgb, var(--blue) 6%, transparent);
+    border: 1px solid color-mix(in srgb, var(--blue) 10%, transparent);
+    /* resting shadow is the hover shadow at zero alpha, so it fades in smoothly */
+    box-shadow:
+      0 26px 50px -18px rgba(0, 0, 0, 0),
+      0 16px 40px -14px rgba(156, 188, 224, 0);
   }
-  .card__media img { width: 100%; height: 100%; object-fit: cover; }
 
-  .card__tag {
+  /* invisible full-card button that opens the popup */
+  .card__open {
     position: absolute;
-    top: 0.6rem;
-    left: 0.6rem;
+    inset: 0;
+    z-index: 2;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    border-radius: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .card__open:focus-visible {
+    outline: 2px solid var(--blue-bright);
+    outline-offset: 3px;
+  }
+
+  /* release-date tag at the very top of the card */
+  .card__release {
+    align-self: flex-start;
     font-family: var(--display);
     font-weight: 600;
-    font-size: 0.66rem;
-    letter-spacing: 0.14em;
     text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 1.0rem;
     color: #05070b;
     background: var(--blue);
-    padding: 0.3rem 0.6rem;
+    padding: 0.4rem 0.9rem;
     border-radius: 999px;
+    white-space: nowrap;
   }
 
-  .card__line {
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
-    margin-top: 1rem;
+  .card__media {
+    aspect-ratio: 4 / 5;     /* width : height — raise the 2nd number for a taller image */
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--panel);
+    /* soft, tight lift kept close so it won't bleed onto the name below */
+    box-shadow:
+      0 10px 20px -12px rgba(0, 0, 0, 0.9),
+      0 6px 14px -10px rgba(156, 188, 224, 0.14);
   }
+  .card__media img { width: 100%; height: 100%; object-fit: cover; display: block; object-fit: contain; }
+
   .card__name {
     margin: 0;
-    display: flex;
-    align-items: baseline;
-    gap: 0.4rem;
     font-family: var(--display);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    font-size: 1.08rem;
-    line-height: 1.15;
-    color: var(--blue);
+    font-size: 1.6rem;
+    line-height: 1.1;
+    color: var(--blue-bright);
   }
-  .card__heart { color: var(--blue-deep); font-size: 0.8em; }
 
-  /* the signature: a dotted leader running from the drink name to its price */
-  .card__leader {
-    flex: 1 1 auto;
-    align-self: center;
-    height: 0;
-    border-bottom: 1.5px dotted var(--line);
-    transform: translateY(1px);
+  .card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
   }
+  .card__roast {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.9rem;
+    color: var(--blue-deep);
+  }
+  .card__pips { display: inline-flex; gap: 3px; }
+  .pip {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1px solid var(--blue-deep);
+    background: transparent;
+  }
+  .pip.is-on { background: var(--blue-deep); }
+
   .card__price {
+    margin-left: auto;               /* always flush-right, even when roast is absent */
     font-family: var(--body);
     font-weight: 500;
-    font-size: 1rem;
+    font-size: 1.4rem;
     letter-spacing: 0.02em;
     color: var(--blue-bright);
     font-variant-numeric: tabular-nums;
   }
 
-  .card__desc {
-    margin: 0.5rem 0 0;
+  /* ===== popup (placeholder styling — to be designed next) ===== */
+  .drink-modal {
+    width: min(92vw, 430px);          /* single image ≈ the card image size */
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: #070b11;
+    color: var(--text);
+  }
+  /* coffees: wide enough for two card-sized images side by side */
+  .drink-modal--pair { width: min(94vw, 820px); }
+  .drink-modal::backdrop {
+    background: rgba(0, 0, 0, 0.62);
+    backdrop-filter: blur(3px);
+  }
+  .drink-modal__inner {
+    position: relative;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .drink-modal__close {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--text);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .drink-modal__close:hover { border-color: var(--blue); color: var(--blue-bright); }
+  /* image row: one figure normally, two (hot + iced) on coffee pages */
+  .drink-modal__media-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;              /* extra breathing room before the collection tag */
+  }
+  .drink-modal__figure {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .drink-modal__media {
+    aspect-ratio: 4 / 5;             /* match the card image */
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--panel);
+  }
+  .drink-modal__media img { width: 100%; height: 100%; object-fit: contain; display: block; object-fit: contain; }
+  .drink-modal__figcap {
+    text-align: center;
+    font-family: var(--display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.8rem;
+    color: var(--blue-deep);
+  }
+  .drink-modal__collection {
+    margin: 0;
+    font-family: var(--script);
+    font-size: 1.7rem;
+    line-height: 1;
+    color: var(--blue);
+  }
+  .drink-modal__name {
+    margin: 0;
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 1.7rem;
+    color: var(--blue-bright);
+  }
+  .drink-modal__meta { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .drink-modal__roast {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 1.0rem;
+    color: var(--blue-deep);
+  }
+  .drink-modal__price {
+    margin-left: auto;
+    font-family: var(--body);
+    font-size: 1.5rem;
+    color: var(--blue-bright);
+    font-variant-numeric: tabular-nums;
+  }
+  .drink-modal__desc {
+    margin: 0;
     color: var(--muted);
-    font-size: 0.98rem;
-    line-height: 1.5;
+    font-size: 1.2rem;
+    max-width: 32rem;
+    line-height: 1.55;
+  }
+  .drink-modal__flag {
+    margin: 0;
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.9rem;
+    color: var(--blue-deep);
   }
 
+  /* on small screens, stack the hot/iced pair so each image stays a good size */
+  @media (max-width: 560px) {
+    .drink-modal--pair { width: min(94vw, 430px); }
+    .drink-modal__media-row--pair { flex-direction: column; }
+  }
+
+  /* ===== entrance + whole-card hover lift ===== */
   @media (prefers-reduced-motion: no-preference) {
     .card {
       opacity: 0;
-      transform: translateY(10px);
+      /* entrance uses `translate` so the hover `transform` below stays free
+         (an animation on `transform` would win the cascade and block the hover). */
+      translate: 0 12px;
       animation: card-rise 0.55s ease forwards;
       animation-delay: calc(var(--i) * 45ms);
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        background-color 0.3s ease,
+        border-color 0.3s ease;
     }
-    .card__media { transition: transform 0.3s ease, border-color 0.3s ease; }
     @media (hover: hover) {
-      .card:hover .card__media {
-        transform: translateY(-3px);
-        border-color: color-mix(in srgb, var(--blue) 55%, transparent);
+      .card:hover {
+        transform: translateY(-6px);
+        background: color-mix(in srgb, var(--blue) 10%, transparent);
+        border-color: color-mix(in srgb, var(--blue) 20%, transparent);
+        box-shadow:
+          0 26px 50px -18px rgba(0, 0, 0, 0.9),
+          0 16px 40px -14px rgba(156, 188, 224, 0.20);
       }
     }
   }
 
   @keyframes card-rise {
-    to { opacity: 1; transform: none; }
+    to { opacity: 1; translate: 0 0; }
   }
 </style>
+
+<script>
+  // Wire every card's trigger to its own <dialog>. Runs once (Astro bundles this
+  // module a single time regardless of how many cards render).
+  document.querySelectorAll<HTMLElement>('.card').forEach((card) => {
+    const opener = card.querySelector<HTMLButtonElement>('.card__open');
+    const dialog = card.querySelector<HTMLDialogElement>('dialog');
+    if (!opener || !dialog) return;
+
+    const closer = dialog.querySelector<HTMLButtonElement>('.drink-modal__close');
+    opener.addEventListener('click', () => dialog.showModal());
+    closer?.addEventListener('click', () => dialog.close());
+
+    // Click on the backdrop (the dialog element itself, outside its inner panel) closes it.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  });
+</script>

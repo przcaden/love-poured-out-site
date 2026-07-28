@@ -25,6 +25,9 @@ const menuSchema = z.object({
   name: z.string(),
   description: z.string().default(''),
   price: z.string().default(''),
+  roast: z.string().default(''),        // "Light" | "Medium" | "Dark" (free text ok)
+  collection: z.string().default(''),   // e.g. "Flavor Reveal #2" — a series label
+  releaseDate: z.string().default(''),  // free-text label, e.g. "Coming Fall 2026"
   order: z.number().default(0),
   available: z.boolean().default(true),
   seasonal: z.boolean().default(false),
@@ -36,6 +39,9 @@ interface MenuEntry {
   name: string;
   description: string;
   price: string;
+  roast: string;
+  collection: string;
+  releaseDate: string;
   order: number;
   available: boolean;
   seasonal: boolean;
@@ -86,6 +92,13 @@ async function loadFromAirtable(table: string): Promise<MenuEntry[]> {
       name: String(f.Name),
       description: f.Description ? String(f.Description) : '',
       price: f.Price != null ? String(f.Price) : '',
+      // New columns. Use single-line TEXT fields in Airtable so the owner types
+      // exactly what should appear: Roast = "Light"/"Medium"/"Dark",
+      // Collection = a series name, "Release Date" = a label like "Coming Fall 2026"
+      // (a plain-text field, NOT a Date field — a Date field would print an ISO string).
+      roast: f.Roast ? String(f.Roast) : '',
+      collection: f.Collection ? String(f.Collection) : '',
+      releaseDate: f['Release Date'] ? String(f['Release Date']) : '',
       order: typeof f.Order === 'number' ? f.Order : position,
       available: f.Available !== false,
       seasonal: f.Seasonal === true,

@@ -1,62 +1,80 @@
 [
   {
-    "id": "sample-latte",
-    "name": "Latte",
-    "description": "Espresso and steamed milk — smooth, warm, and comforting.",
+    "id": "sample-cookie-butter",
+    "name": "Cookie Butter",
+    "collection": "Light of the World Collection",
+    "roast": "Light",
+    "description": "Warm, creamy, and perfectly spiced with rich cookie butter flavor. Your favorite cookie in a single coffee cup!",
+    "price": "4.50",
+    "releaseDate": "Coming Fall 2026",
+    "order": 5,
+    "available": true,
+    "seasonal": false,
+    "image": "/samples/cookie-butter-latte-hot.png"
+  },
+  {
+    "id": "sample-banana-split",
+    "name": "Banana Split",
+    "collection": "",
+    "roast": "Light",
+    "description": "Smooth, bright, and filled with sweet dessert-inspired notes. Perfect for those who enjoy a sweet twist to their morning coffee.",
     "price": "4.75",
+    "releaseDate": "Coming Fall 2026",
     "order": 10,
     "available": true,
     "seasonal": false,
-    "image": "/samples/coffee-mug.svg"
+    "image": "/samples/banana-split-latte-hot.png"
   },
   {
-    "id": "sample-cappuccino",
-    "name": "Cappuccino",
-    "description": "Equal parts espresso, steamed milk, and airy foam.",
+    "id": "sample-brown-sugar-cinnamon",
+    "name": "Brown Sugar Cinnamon",
+    "collection": "",
+    "roast": "Medium",
+    "description": "A cozy blend of brown sugar sweetness and warm cinnamon spice. Comforting, smooth, and full of love!",
     "price": "4.50",
+    "releaseDate": "Coming Fall 2026",
     "order": 20,
     "available": true,
     "seasonal": false,
-    "image": "/samples/coffee-espresso.svg"
+    "image": "/samples/bsc-latte-hot.png"
   },
   {
-    "id": "sample-caramel-macchiato",
-    "name": "Caramel Macchiato",
-    "description": "Vanilla, steamed milk, and espresso finished with a caramel drizzle.",
-    "price": "5.25",
-    "order": 30,
-    "available": true,
-    "seasonal": false,
-    "image": "/samples/coffee-mug.svg"
-  },
-  {
-    "id": "sample-mocha",
-    "name": "Mocha",
-    "description": "Espresso and steamed milk with rich chocolate.",
+    "id": "sample-maple-bourbon",
+    "name": "Maple Bourbon",
+    "collection": "",
+    "roast": "Medium",
+    "description": "Smooth maple sweetness with a touch of warmth and depth. Pure comfort in every sip. (Non-Alcoholic)",
     "price": "5.00",
+    "releaseDate": "Coming Fall 2026",
     "order": 40,
     "available": true,
     "seasonal": false,
-    "image": "/samples/coffee-mug.svg"
+    "image": "/samples/mbourbon-latte-hot.png"
   },
   {
-    "id": "sample-honey-cinnamon-latte",
-    "name": "Honey Cinnamon Latte",
-    "description": "A latte sweetened with our house honey cinnamon syrup.",
+    "id": "sample-toasted-pecan",
+    "name": "Toasted Pecan",
+    "collection": "",
+    "roast": "Dark",
+    "description": "Rich, nutty, and perfectly roasted. Toasted pecan flavor with a bold, smooth finish you'll love.",
     "price": "5.25",
+    "releaseDate": "Coming Fall 2026",
+    "order": 30,
+    "available": true,
+    "seasonal": false,
+    "image": "/samples/tpecan-latte-hot.png"
+  },
+  {
+    "id": "sample-roasted-hazelnut",
+    "name": "Roasted Hazelnut",
+    "collection": "Flavor Reveal #1",
+    "roast": "Dark",
+    "description": "Deep, smooth, and indulgent with the rich taste of roasted hazelnut. A timeless classic in every cup!",
+    "price": "5.25",
+    "releaseDate": "Coming Fall 2026",
     "order": 50,
     "available": true,
     "seasonal": true,
-    "image": "/samples/coffee-espresso.svg"
-  },
-  {
-    "id": "sample-cold-brew",
-    "name": "Cold Brew",
-    "description": "Steeped slow for a smooth, bold, low-acidity cup over ice.",
-    "price": "4.75",
-    "order": 60,
-    "available": true,
-    "seasonal": false,
-    "image": "/samples/coffee-iced.svg"
+    "image": "/samples/hazelnut-latte-hot.png"
   }
 ]

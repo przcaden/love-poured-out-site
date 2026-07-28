@@ -7,14 +7,18 @@ interface Drink {
   price?: string;
   image?: string;
   seasonal?: boolean;
+  roast?: string;
+  collection?: string;
+  releaseDate?: string;
   order?: number;
   available?: boolean;
 }
 interface Props {
   title: string;
   drinks: Drink[];
+  dualImage?: boolean;
 }
-const { title, drinks } = Astro.props;
+const { title, drinks, dualImage = false } = Astro.props;
 ---
 <div class="section-head">
   <p class="section-head__title"><span>♡</span> {title} <span>♡</span></p>
@@ -34,6 +38,10 @@ const { title, drinks } = Astro.props;
         price={d.price}
         image={d.image}
         seasonal={d.seasonal}
+        roast={d.roast}
+        collection={d.collection}
+        releaseDate={d.releaseDate}
+        dualImage={dualImage}
         index={i}
       />
     ))}

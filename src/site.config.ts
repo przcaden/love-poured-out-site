@@ -26,4 +26,4 @@ export const nav: { label: string; href: string | null }[] = [
 ];
 
 // Set this to your social page URL to activate the "Follow Our Journey" button.
-export const social = '';
+export const social = 'https://www.instagram.com/love.pouredout/';
