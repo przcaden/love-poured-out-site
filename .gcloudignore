@@ -1,7 +1,23 @@
-# Container should not ever use these
-.git/
-node_modules/
-.env
+# The image now BUILDS from source in the cloud, so source must be uploaded.
+# Only exclude things the build regenerates, plus secrets and local noise.
 
-# Optional, but keeps the upload small
-src/
+# Build artifacts — the image rebuilds these.
+dist/
+.astro/
+
+# Dependencies — restored by `npm ci` inside the image.
+node_modules/
+
+# Airtable images are re-downloaded at build time.
+public/menu-images/
+
+# Secrets / local env — must never be uploaded.
+.env
+.env.*
+!.env.example
+
+# VCS and local noise.
+.git/
+.gitignore
+.dockerignore
+*.log

@@ -1,0 +1,13 @@
+# Keeps `COPY . .` clean during local `docker build` (Cloud Build already
+# filters via .gcloudignore, but this protects direct docker builds too).
+node_modules
+dist
+.astro
+public/menu-images
+.git
+.gitignore
+.gcloudignore
+.env
+.env.*
+*.log
+Dockerfile*

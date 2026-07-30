@@ -1,0 +1,58 @@
+# Builds the multi-stage image (fetching live Airtable content during the build
+# stage), pushes it to Artifact Registry, and deploys it to Cloud Run.
+# Run with:  gcloud builds submit --config cloudbuild.yaml .
+
+substitutions:
+  _REGION: us-central1
+  _REPO: app
+  _SERVICE: love-poured-out
+  _IMAGE: love-poured-out
+  _TAG: latest
+
+steps:
+  # 1. Build. Airtable creds are injected as build args from Secret Manager and
+  #    are used ONLY by the node build stage. The final image is a fresh
+  #    nginx base, so it does not carry the token in its history.
+  - name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    secretEnv: ['AIRTABLE_TOKEN', 'AIRTABLE_BASE']
+    args:
+      - -c
+      - |
+        docker build \
+          --build-arg AIRTABLE_TOKEN="$$AIRTABLE_TOKEN" \
+          --build-arg AIRTABLE_BASE="$$AIRTABLE_BASE" \
+          -t ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:${_TAG} \
+          .
+
+  # 2. Push to Artifact Registry.
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:${_TAG}
+
+  # 3. Deploy to Cloud Run.
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:${_TAG}
+      - --region=${_REGION}
+      - --allow-unauthenticated
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:${_TAG}
+
+# Map Secret Manager versions to the env vars the build step consumes.
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/airtable-token/versions/latest
+      env: AIRTABLE_TOKEN
+    - versionName: projects/$PROJECT_ID/secrets/airtable-base/versions/latest
+      env: AIRTABLE_BASE
+
+# Required when building under the Compute Engine default service account
+# (no default Cloud Storage logs bucket).
+options:
+  logging: CLOUD_LOGGING_ONLY
