@@ -106,17 +106,17 @@ const showPair = dualImage && !!hotImage && !!icedImage;
           {showPair ? (
             <>
               <figure class="drink-modal__figure">
-                <div class="drink-modal__media"><img src={hotImage} alt={`${name}, hot`} /></div>
+                <div class="drink-modal__media"><img src={hotImage} alt={`${name}, hot`} loading="lazy" decoding="async" /></div>
                 <figcaption class="drink-modal__figcap">Hot</figcaption>
               </figure>
               <figure class="drink-modal__figure">
-                <div class="drink-modal__media"><img src={icedImage} alt={`${name}, iced`} /></div>
+                <div class="drink-modal__media"><img src={icedImage} alt={`${name}, iced`} loading="lazy" decoding="async" /></div>
                 <figcaption class="drink-modal__figcap">Iced</figcaption>
               </figure>
             </>
           ) : (
             <figure class="drink-modal__figure">
-              <div class="drink-modal__media"><img src={thumb} alt={name} /></div>
+              <div class="drink-modal__media"><img src={thumb} alt={name} loading="lazy" decoding="async" /></div>
             </figure>
           )}
         </div>

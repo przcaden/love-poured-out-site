@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import sharp from 'sharp';
 
 // -----------------------------------------------------------------------------
 // Each menu page reads its own Airtable TABLE from the same base. To add a new
@@ -16,6 +17,13 @@ import path from 'node:path';
 // -----------------------------------------------------------------------------
 
 const IMAGE_DIR = path.resolve('./public/menu-images');
+
+// Cards and the popup never render an image wider than this, so anything larger
+// is wasted bytes on the client. Owner-uploaded phone photos from Airtable are
+// often 2–5 MB each; downscaling to this width and re-encoding as WebP brings a
+// typical image down to ~100 KB (~95% smaller), which is the difference between
+// the Coffees page loading instantly and appearing to hang over the network.
+const IMAGE_MAX_WIDTH = 1000;
 
 // Read an env var from either import.meta.env (local .env) or process.env (CI).
 // Accepts several aliases and returns the first one that's set, so both the
@@ -67,13 +75,21 @@ interface MenuEntry {
 // `key` is the filename stem. A record can have more than one attachment
 // (Coffees have a hot AND an iced image), so callers pass a distinct key per
 // image — e.g. `${rec.id}-hot` / `${rec.id}-ice` — to avoid overwriting.
-async function cacheImage(photo: { url: string; type?: string }, key: string): Promise<string> {
-  const ext = (photo.type?.split('/')[1] ?? 'jpg').replace('jpeg', 'jpg');
-  const filename = `${key}.${ext}`;
+async function cacheImage(photo: { url: string }, key: string): Promise<string> {
+  const filename = `${key}.webp`;
   const res = await fetch(photo.url); // URL is fresh — issued moments ago by this build
   if (!res.ok) throw new Error(`Image download failed for ${key}: ${res.status}`);
+  // Downscale + re-encode so the browser isn't pulling multi-MB originals.
+  // .rotate() with no args applies EXIF orientation, so phone photos that were
+  // shot sideways don't render rotated. withoutEnlargement keeps small images
+  // from being upscaled (and blurred).
+  const optimized = await sharp(Buffer.from(await res.arrayBuffer()))
+    .rotate()
+    .resize({ width: IMAGE_MAX_WIDTH, withoutEnlargement: true })
+    .webp({ quality: 80 })
+    .toBuffer();
   await fs.mkdir(IMAGE_DIR, { recursive: true });
-  await fs.writeFile(path.join(IMAGE_DIR, filename), Buffer.from(await res.arrayBuffer()));
+  await fs.writeFile(path.join(IMAGE_DIR, filename), optimized);
   return `/menu-images/${filename}`;
 }
 
