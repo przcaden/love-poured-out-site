@@ -6,6 +6,8 @@ interface Drink {
   description?: string;
   price?: string;
   image?: string;
+  hotImage?: string;
+  icedImage?: string;
   seasonal?: boolean;
   roast?: string;
   collection?: string;
@@ -37,6 +39,8 @@ const { title, drinks, dualImage = false } = Astro.props;
         description={d.description}
         price={d.price}
         image={d.image}
+        hotImage={d.hotImage}
+        icedImage={d.icedImage}
         seasonal={d.seasonal}
         roast={d.roast}
         collection={d.collection}

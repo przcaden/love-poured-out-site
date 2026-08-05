@@ -4,6 +4,8 @@ interface Props {
   description?: string;
   price?: string;
   image?: string;
+  hotImage?: string;
+  icedImage?: string;
   seasonal?: boolean;
   roast?: string;
   collection?: string;
@@ -16,6 +18,8 @@ const {
   description = '',
   price = '',
   image = '',
+  hotImage = '',
+  icedImage = '',
   seasonal = false,
   roast = '',
   collection = '',
@@ -42,13 +46,13 @@ const roastLabel = roastRaw ? (/roast/i.test(roastRaw) ? roastRaw : `${roastRaw}
 const modalId = `drink-modal-${index}`;
 const titleId = `drink-title-${index}`;
 
-// Coffees ship a hot + iced pair. The iced image is derived from the hot image by
-// swapping the "-hot" suffix for "-ice" (e.g. cookie-butter-latte-hot.png →
-// cookie-butter-latte-ice.png). If the image doesn't use that convention, or this
-// isn't a dual-image page, the popup just shows the single image.
-const icedImage = image.replace(/-hot(\.\w+)$/i, '-ice$1');
-const hasIced = icedImage !== image;
-const showPair = dualImage && !!image && hasIced;
+// Coffees ship a hot + iced pair, pulled from the "Hot Coffee Image" and
+// "Iced Coffee Image" columns. `thumb` is the single image shown on the summary
+// card (the hot shot, falling back to whatever exists). The popup shows the pair
+// side by side when this is a dual-image page and both images are present;
+// otherwise it shows the one image we have.
+const thumb = image || hotImage || icedImage;
+const showPair = dualImage && !!hotImage && !!icedImage;
 ---
 
 <article class="card" style={`--i:${index}`}>
@@ -70,9 +74,9 @@ const showPair = dualImage && !!image && hasIced;
 
   {releaseDate && <span class="card__release">{releaseDate}</span>}
 
-  {image && (
+  {thumb && (
     <div class="card__media">
-      <img src={image} alt={name} loading="lazy" width="600" height="450" />
+      <img src={thumb} alt={name} loading="lazy" width="600" height="450" />
     </div>
   )}
 
@@ -97,12 +101,12 @@ const showPair = dualImage && !!image && hasIced;
     <div class="drink-modal__inner">
       <button class="drink-modal__close" type="button" aria-label="Close details">&times;</button>
 
-      {image && (
+      {thumb && (
         <div class:list={['drink-modal__media-row', showPair && 'drink-modal__media-row--pair']}>
           {showPair ? (
             <>
               <figure class="drink-modal__figure">
-                <div class="drink-modal__media"><img src={image} alt={`${name}, hot`} /></div>
+                <div class="drink-modal__media"><img src={hotImage} alt={`${name}, hot`} /></div>
                 <figcaption class="drink-modal__figcap">Hot</figcaption>
               </figure>
               <figure class="drink-modal__figure">
@@ -112,7 +116,7 @@ const showPair = dualImage && !!image && hasIced;
             </>
           ) : (
             <figure class="drink-modal__figure">
-              <div class="drink-modal__media"><img src={image} alt={name} /></div>
+              <div class="drink-modal__media"><img src={thumb} alt={name} /></div>
             </figure>
           )}
         </div>

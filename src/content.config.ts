@@ -18,8 +18,20 @@ import path from 'node:path';
 const IMAGE_DIR = path.resolve('./public/menu-images');
 
 // Read an env var from either import.meta.env (local .env) or process.env (CI).
-const env = (key: string): string | undefined =>
-  (import.meta.env as Record<string, string | undefined>)[key] ?? process.env[key];
+// Accepts several aliases and returns the first one that's set, so both the
+// documented names (AIRTABLE_TOKEN / AIRTABLE_BASE) and the alternates
+// (AIRTABLE_API_KEY / AIRTABLE_BASE_ID) work.
+const env = (...keys: string[]): string | undefined => {
+  for (const key of keys) {
+    const value =
+      (import.meta.env as Record<string, string | undefined>)[key] ?? process.env[key];
+    if (value) return value;
+  }
+  return undefined;
+};
+
+const TOKEN_KEYS = ['AIRTABLE_TOKEN', 'AIRTABLE_API_KEY'] as const;
+const BASE_KEYS = ['AIRTABLE_BASE', 'AIRTABLE_BASE_ID'] as const;
 
 const menuSchema = z.object({
   name: z.string(),
@@ -31,7 +43,9 @@ const menuSchema = z.object({
   order: z.number().default(0),
   available: z.boolean().default(true),
   seasonal: z.boolean().default(false),
-  image: z.string().default(''),
+  image: z.string().default(''),      // generic single image ("Photo" field), used by single-image pages
+  hotImage: z.string().default(''),   // Coffees: "Hot Coffee Image" attachment
+  icedImage: z.string().default(''),  // Coffees: "Iced Coffee Image" attachment
 });
 
 interface MenuEntry {
@@ -46,21 +60,30 @@ interface MenuEntry {
   available: boolean;
   seasonal: boolean;
   image: string;
+  hotImage: string;
+  icedImage: string;
 }
 
-async function cacheImage(photo: { url: string; type?: string }, id: string): Promise<string> {
+// `key` is the filename stem. A record can have more than one attachment
+// (Coffees have a hot AND an iced image), so callers pass a distinct key per
+// image — e.g. `${rec.id}-hot` / `${rec.id}-ice` — to avoid overwriting.
+async function cacheImage(photo: { url: string; type?: string }, key: string): Promise<string> {
   const ext = (photo.type?.split('/')[1] ?? 'jpg').replace('jpeg', 'jpg');
-  const filename = `${id}.${ext}`;
+  const filename = `${key}.${ext}`;
   const res = await fetch(photo.url); // URL is fresh — issued moments ago by this build
-  if (!res.ok) throw new Error(`Image download failed for ${id}: ${res.status}`);
+  if (!res.ok) throw new Error(`Image download failed for ${key}: ${res.status}`);
   await fs.mkdir(IMAGE_DIR, { recursive: true });
   await fs.writeFile(path.join(IMAGE_DIR, filename), Buffer.from(await res.arrayBuffer()));
   return `/menu-images/${filename}`;
 }
 
+// Airtable attachment fields come back as an array; grab the first attachment.
+const firstAttachment = (field: unknown): { url: string; type?: string } | null =>
+  Array.isArray(field) && field[0]?.url ? field[0] : null;
+
 async function loadFromAirtable(table: string): Promise<MenuEntry[]> {
-  const token = env('AIRTABLE_TOKEN')!;
-  const base = env('AIRTABLE_BASE')!;
+  const token = env(...TOKEN_KEYS)!;
+  const base = env(...BASE_KEYS)!;
   // Records come back in the order of this view, so the owner can drag rows to
   // reorder. Name the ordering view the same in every table (default below).
   const view = env('AIRTABLE_VIEW') ?? 'Grid view';
@@ -84,8 +107,16 @@ async function loadFromAirtable(table: string): Promise<MenuEntry[]> {
     const f = rec.fields;
     if (!f.Name) continue; // skip empty rows
 
-    const photo = Array.isArray(f.Photo) ? f.Photo[0] : null;
-    const image = photo?.url ? await cacheImage(photo, rec.id) : '';
+    // Coffees table uses two attachment columns; other tables may use a single
+    // "Photo" column. Cache whatever is present (with distinct filenames).
+    const hotPhoto = firstAttachment(f['Hot Coffee Image']);
+    const icedPhoto = firstAttachment(f['Iced Coffee Image']);
+    const photo = firstAttachment(f.Photo);
+
+    const hotImage = hotPhoto ? await cacheImage(hotPhoto, `${rec.id}-hot`) : '';
+    const icedImage = icedPhoto ? await cacheImage(icedPhoto, `${rec.id}-ice`) : '';
+    // Fall back to the hot image so the summary card always has a thumbnail.
+    const image = photo ? await cacheImage(photo, rec.id) : hotImage;
 
     entries.push({
       id: rec.id,
@@ -103,6 +134,8 @@ async function loadFromAirtable(table: string): Promise<MenuEntry[]> {
       available: f.Available !== false,
       seasonal: f.Seasonal === true,
       image,
+      hotImage,
+      icedImage,
     });
     position++;
   }
@@ -118,7 +151,7 @@ async function loadSample(file: string): Promise<MenuEntry[]> {
 function menuCollection(table: string, sampleFile: string) {
   return defineCollection({
     loader: async () => {
-      if (env('AIRTABLE_TOKEN') && env('AIRTABLE_BASE')) {
+      if (env(...TOKEN_KEYS) && env(...BASE_KEYS)) {
         return loadFromAirtable(table);
       }
       console.warn(`[${table}] No Airtable credentials — using sample data (src/data/${sampleFile}).`);

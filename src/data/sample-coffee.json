@@ -10,7 +10,8 @@
     "order": 5,
     "available": true,
     "seasonal": false,
-    "image": "/samples/cookie-butter-latte-hot.png"
+    "hotImage": "/samples/cookie-butter-latte-hot.png",
+    "icedImage": "/samples/cookie-butter-latte-ice.png"
   },
   {
     "id": "sample-banana-split",
@@ -23,7 +24,8 @@
     "order": 10,
     "available": true,
     "seasonal": false,
-    "image": "/samples/banana-split-latte-hot.png"
+    "hotImage": "/samples/banana-split-latte-hot.png",
+    "icedImage": "/samples/banana-split-latte-ice.png"
   },
   {
     "id": "sample-brown-sugar-cinnamon",
@@ -36,7 +38,8 @@
     "order": 20,
     "available": true,
     "seasonal": false,
-    "image": "/samples/bsc-latte-hot.png"
+    "hotImage": "/samples/bsc-latte-hot.png",
+    "icedImage": "/samples/bsc-latte-ice.png"
   },
   {
     "id": "sample-maple-bourbon",
@@ -49,7 +52,8 @@
     "order": 40,
     "available": true,
     "seasonal": false,
-    "image": "/samples/mbourbon-latte-hot.png"
+    "hotImage": "/samples/mbourbon-latte-hot.png",
+    "icedImage": "/samples/mbourbon-latte-ice.png"
   },
   {
     "id": "sample-toasted-pecan",
@@ -62,7 +66,8 @@
     "order": 30,
     "available": true,
     "seasonal": false,
-    "image": "/samples/tpecan-latte-hot.png"
+    "hotImage": "/samples/tpecan-latte-hot.png",
+    "icedImage": "/samples/tpecan-latte-ice.png"
   },
   {
     "id": "sample-roasted-hazelnut",
@@ -75,6 +80,7 @@
     "order": 50,
     "available": true,
     "seasonal": true,
-    "image": "/samples/hazelnut-latte-hot.png"
+    "hotImage": "/samples/hazelnut-latte-hot.png",
+    "icedImage": "/samples/hazelnut-latte-ice.png"
   }
 ]
