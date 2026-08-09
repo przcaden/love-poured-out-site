@@ -255,10 +255,139 @@ a.nav__link:hover { color: var(--blue); }
 a.nav__cta:hover { background: var(--blue-bright); transform: translateY(-1px); }
 .nav__cta.is-disabled { opacity: 0.6; cursor: default; }
 
+/* hamburger trigger — hidden on desktop, revealed at the mobile breakpoint ---- */
+.nav__toggle {
+  display: none;                 /* shown only ≤720px (see media query below) */
+  margin-left: auto;             /* pins it to the right once links/CTA are hidden */
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--blue);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.nav__toggle:hover { border-color: var(--blue-deep); }
+.nav__toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.nav__toggle-bars { position: relative; display: block; width: 22px; height: 14px; }
+.nav__toggle-bars span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--blue);
+}
+.nav__toggle-bars span:nth-child(1) { top: 0; }
+.nav__toggle-bars span:nth-child(2) { top: 6px; }
+.nav__toggle-bars span:nth-child(3) { top: 12px; }
+
+/* full-screen mobile menu (native <dialog>) -------------------------------- */
+.mobile-menu {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: var(--bg);
+  color: var(--text);
+}
+.mobile-menu::backdrop { background: rgba(0, 0, 0, 0.72); }
+.mobile-menu__inner {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem 1.5rem 2.4rem;
+}
+.mobile-menu[open] .mobile-menu__inner { animation: menu-in 0.28s ease both; }
+@keyframes menu-in {
+  from { opacity: 0; translate: 0 10px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+.mobile-menu__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: clamp(1.6rem, 8vh, 3.2rem);
+}
+.mobile-menu__brand { line-height: 0; }
+.mobile-menu__brand img { width: 48px; height: auto; }
+.mobile-menu__close {
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--blue);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.mobile-menu__close:hover { border-color: var(--blue-deep); }
+.mobile-menu__close:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.mobile-menu__links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(0.9rem, 3.4vh, 1.6rem);
+}
+.mobile-menu__link {
+  font-family: var(--display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: clamp(1.5rem, 6.4vw, 2rem);
+  color: var(--text);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+a.mobile-menu__link:hover,
+a.mobile-menu__link:focus-visible { color: var(--blue); }
+.mobile-menu__link.is-active { color: var(--blue); }
+.mobile-menu__link.is-disabled { color: color-mix(in srgb, var(--muted) 42%, transparent); }
+.mobile-menu__foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.3rem, 4.5vh, 2.2rem);
+  padding-top: clamp(1.6rem, 5vh, 2.6rem);
+}
+.mobile-menu__cta {
+  font-family: var(--display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 1rem;
+  color: #05070b;
+  background: var(--blue);
+  padding: 0.7rem 2rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+a.mobile-menu__cta:hover { background: var(--blue-bright); }
+.mobile-menu__cta.is-disabled { opacity: 0.6; cursor: default; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu[open] .mobile-menu__inner { animation: none; }
+}
+
 @media (max-width: 720px) {
-  .nav__inner { flex-direction: column; gap: 0.6rem; }
-  .nav__stack { align-items: center; }
-  .nav__links { justify-content: center; }
+  .nav__links,
+  .nav__cta { display: none; }        /* collapse into the hamburger */
+  .nav__toggle { display: inline-flex; }
 }
 
 /* ---- section navigation (home) ------------------------------------------- */

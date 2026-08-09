@@ -30,5 +30,87 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     ) : (
       <span class="nav__cta is-disabled" aria-disabled="true" title="Coming soon">Follow Our Journey</span>
     )}
+
+    <!-- Mobile-only: opens the full-screen menu below. Hidden on desktop via CSS. -->
+    <button
+      class="nav__toggle"
+      type="button"
+      aria-label="Open menu"
+      aria-haspopup="dialog"
+      aria-controls="mobile-menu"
+      aria-expanded="false"
+    >
+      <span class="nav__toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
   </div>
+
+  <!-- Mobile navigation overlay. Native <dialog> gives us Escape-to-close,
+       focus trapping, and focus return for free. Never opens on desktop
+       (the trigger button is display:none there). -->
+  <dialog class="mobile-menu" id="mobile-menu" aria-label="Menu">
+    <div class="mobile-menu__inner">
+      <div class="mobile-menu__top">
+        <a class="mobile-menu__brand" href="/" data-close aria-label={`${site.name} — home`}>
+          <img src="/logo.png" alt={site.name} width="48" height="48" />
+        </a>
+        <button class="mobile-menu__close" type="button" data-close aria-label="Close menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+               stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+
+      <nav class="mobile-menu__links" aria-label="Mobile primary">
+        {nav.map((item) =>
+          item.href ? (
+            <a
+              class:list={['mobile-menu__link', isActive(item.href) && 'is-active']}
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+              data-close
+            >{item.label}</a>
+          ) : (
+            <span class="mobile-menu__link is-disabled" aria-disabled="true">{item.label}</span>
+          )
+        )}
+      </nav>
+
+      <div class="mobile-menu__foot">
+        <div class="rule-heart" aria-hidden="true">♡</div>
+        {social ? (
+          <a class="mobile-menu__cta" href={social} target="_blank" rel="noopener noreferrer" data-close>Follow Our Journey</a>
+        ) : (
+          <span class="mobile-menu__cta is-disabled" aria-disabled="true" title="Coming soon">Follow Our Journey</span>
+        )}
+      </div>
+    </div>
+  </dialog>
 </header>
+
+<script>
+  // Wire the hamburger to the <dialog> menu. Runs once.
+  const toggle = document.querySelector<HTMLButtonElement>('.nav__toggle');
+  const menu = document.querySelector<HTMLDialogElement>('.mobile-menu');
+
+  if (toggle && menu) {
+    toggle.addEventListener('click', () => {
+      menu.showModal();
+      document.documentElement.style.overflow = 'hidden'; // lock background scroll
+      toggle.setAttribute('aria-expanded', 'true');
+    });
+
+    // Anything marked data-close (the X, brand logo, and each nav link) dismisses
+    // the menu. Links still navigate afterward; on the current page it just closes.
+    menu.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      if (target === menu || target.closest('[data-close]')) menu.close();
+    });
+
+    // Fires for the X, a link tap, Escape, or a backdrop click — restore page state.
+    menu.addEventListener('close', () => {
+      document.documentElement.style.overflow = '';
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  }
+</script>
