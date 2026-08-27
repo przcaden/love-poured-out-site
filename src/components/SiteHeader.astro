@@ -1,5 +1,6 @@
 ---
-import { site, nav, social } from '../site.config';
+import { site, nav } from '../site.config';
+import SocialIcons from './SocialIcons.astro';
 
 // Normalize the current path (drop trailing slash) for active-link matching.
 const path = (Astro.url.pathname.replace(/\/+$/, '') || '/');
@@ -25,11 +26,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       )}
     </nav>
 
-    {social ? (
-      <a class="nav__cta" href={social} target="_blank" rel="noopener noreferrer">Follow Our Journey</a>
-    ) : (
-      <span class="nav__cta is-disabled" aria-disabled="true" title="Coming soon">Follow Our Journey</span>
-    )}
+    <SocialIcons class="nav__socials" />
 
     <!-- Mobile-only: opens the full-screen menu below. Hidden on desktop via CSS. -->
     <button
@@ -78,11 +75,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 
       <div class="mobile-menu__foot">
         <div class="rule-heart" aria-hidden="true">♡</div>
-        {social ? (
-          <a class="mobile-menu__cta" href={social} target="_blank" rel="noopener noreferrer" data-close>Follow Our Journey</a>
-        ) : (
-          <span class="mobile-menu__cta is-disabled" aria-disabled="true" title="Coming soon">Follow Our Journey</span>
-        )}
+        <SocialIcons class="mobile-menu__socials" />
       </div>
     </div>
   </dialog>

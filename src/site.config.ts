@@ -25,5 +25,12 @@ export const nav: { label: string; href: string | null }[] = [
   { label: 'Contact', href: null },
 ];
 
-// Set this to your social page URL to activate the "Follow Our Journey" button.
-export const social = 'https://www.instagram.com/love.pouredout/';
+// Social pages shown as icon buttons in the header (desktop) and mobile menu.
+// Add, remove, or reorder entries here — no other file needs touching. Only
+// list platforms with a real, live URL; there's no "coming soon" state here
+// the way the nav has, since a social button with nowhere to go isn't useful.
+export const socials: { name: 'Instagram' | 'Facebook' | 'TikTok'; href: string }[] = [
+  { name: 'Instagram', href: 'https://www.instagram.com/love.pouredout/' },
+  { name: 'Facebook', href: 'https://www.facebook.com/share/1E9PVd3Jsr/?mibextid=wwXIfr' },
+  { name: 'TikTok', href: 'https://www.tiktok.com/@hellolove.pouredout' },
+];

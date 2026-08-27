@@ -236,24 +236,40 @@ img { max-width: 100%; display: block; object-fit: contain; }
 a.nav__link:hover { color: var(--blue); }
 .nav__link.is-active { color: var(--blue); }
 .nav__link.is-disabled { color: color-mix(in srgb, var(--muted) 42%, transparent); cursor: default; }
-.nav__cta {
-  flex: 0 0 auto;
-  margin-left: auto;
-  font-family: var(--display);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.9rem;
-  color: #05070b;
-  background: var(--blue);
-  padding: 0.55rem 1.5rem;
-  border-radius: 999px;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background 0.2s ease, transform 0.2s ease;
+/* ---- social icon buttons (header + mobile menu) --------------------------- */
+.socials {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
-a.nav__cta:hover { background: var(--blue-bright); transform: translateY(-1px); }
-.nav__cta.is-disabled { opacity: 0.6; cursor: default; }
+.social-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--blue);
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+.social-btn:hover {
+  color: var(--blue-bright);
+  border-color: color-mix(in srgb, var(--blue) 55%, transparent);
+  background: color-mix(in srgb, var(--blue) 10%, transparent);
+  transform: translateY(-1px);
+}
+.social-btn:focus-visible { outline: 2px solid var(--blue-bright); outline-offset: 2px; }
+.social-btn__icon { display: flex; }
+.social-btn__icon svg { width: 1.15rem; height: 1.15rem; display: block; }
+
+.nav__socials { margin-left: auto; } /* flush right — the old CTA's slot */
+
+.mobile-menu__socials { justify-content: center; gap: 1rem; }
+.mobile-menu__socials .social-btn { width: 3rem; height: 3rem; }
+.mobile-menu__socials .social-btn__icon svg { width: 1.35rem; height: 1.35rem; }
 
 /* hamburger trigger — hidden on desktop, revealed at the mobile breakpoint ---- */
 .nav__toggle {
@@ -364,29 +380,13 @@ a.mobile-menu__link:focus-visible { color: var(--blue); }
   gap: clamp(1.3rem, 4.5vh, 2.2rem);
   padding-top: clamp(1.6rem, 5vh, 2.6rem);
 }
-.mobile-menu__cta {
-  font-family: var(--display);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 1rem;
-  color: #05070b;
-  background: var(--blue);
-  padding: 0.7rem 2rem;
-  border-radius: 999px;
-  text-decoration: none;
-  transition: background 0.2s ease;
-}
-a.mobile-menu__cta:hover { background: var(--blue-bright); }
-.mobile-menu__cta.is-disabled { opacity: 0.6; cursor: default; }
-
 @media (prefers-reduced-motion: reduce) {
   .mobile-menu[open] .mobile-menu__inner { animation: none; }
 }
 
 @media (max-width: 720px) {
   .nav__links,
-  .nav__cta { display: none; }        /* collapse into the hamburger */
+  .nav__socials { display: none; }    /* collapse into the hamburger */
   .nav__toggle { display: inline-flex; }
 }
 
