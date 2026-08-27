@@ -20,7 +20,7 @@ export const nav: { label: string; href: string | null }[] = [
   { label: 'Our Story', href: null },
   { label: 'Coffees', href: '/coffee' },
   { label: 'Coffee Beans', href: null },
-  { label: 'Refreshers', href: null },
+  { label: 'Refreshers', href: '/refreshers' },
   { label: 'Syrups', href: null },
   { label: 'Contact', href: null },
 ];

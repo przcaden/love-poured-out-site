@@ -97,6 +97,10 @@ async function cacheImage(photo: { url: string }, key: string): Promise<string> 
 const firstAttachment = (field: unknown): { url: string; type?: string } | null =>
   Array.isArray(field) && field[0]?.url ? field[0] : null;
 
+// Generic single-image tables use either column name — "Photo" (the original
+// name) or "Image" (used by Refreshers and on). Whichever is present wins.
+const firstPhoto = (f: Record<string, any>) => firstAttachment(f.Photo) ?? firstAttachment(f.Image);
+
 async function loadFromAirtable(table: string): Promise<MenuEntry[]> {
   const token = env(...TOKEN_KEYS)!;
   const base = env(...BASE_KEYS)!;
@@ -127,7 +131,7 @@ async function loadFromAirtable(table: string): Promise<MenuEntry[]> {
     // "Photo" column. Cache whatever is present (with distinct filenames).
     const hotPhoto = firstAttachment(f['Hot Coffee Image']);
     const icedPhoto = firstAttachment(f['Iced Coffee Image']);
-    const photo = firstAttachment(f.Photo);
+    const photo = firstPhoto(f);
 
     const hotImage = hotPhoto ? await cacheImage(hotPhoto, `${rec.id}-hot`) : '';
     const icedImage = icedPhoto ? await cacheImage(icedPhoto, `${rec.id}-ice`) : '';
@@ -180,7 +184,7 @@ function menuCollection(table: string, sampleFile: string) {
 // One collection per page. The string is the exact Airtable table name.
 export const collections = {
   coffee: menuCollection('Coffees', 'sample-coffee.json'),
-  // beans:      menuCollection('Coffee Beans', 'sample-beans.json'),
-  // refreshers: menuCollection('Refreshers', 'sample-refreshers.json'),
-  // syrups:     menuCollection('House Syrups', 'sample-syrups.json'),
+  refreshers: menuCollection('Refreshers', 'sample-refreshers.json'),
+  // beans:  menuCollection('Coffee Beans', 'sample-beans.json'),
+  // syrups: menuCollection('House Syrups', 'sample-syrups.json'),
 };

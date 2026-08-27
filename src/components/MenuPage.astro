@@ -1,0 +1,37 @@
+---
+// Shared shell for every drink-menu page (Coffees, Refreshers, and whatever
+// comes next — Coffee Beans, Syrups…). A page file just picks its collection
+// and title; this component owns the fetch → filter → sort → render pattern
+// so that logic lives in exactly one place.
+//
+// To add a new menu page once its Airtable table + collection exist:
+//   <MenuPage collection="yourCollectionKey" title="Your Title" />
+// (add `dualImage={true}` only for a page that ships paired hot/iced images,
+// like Coffees).
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import SiteHeader from './SiteHeader.astro';
+import SiteFooter from './SiteFooter.astro';
+import MenuGrid from './MenuGrid.astro';
+import { site } from '../site.config';
+import type { collections } from '../content.config';
+
+interface Props {
+  collection: keyof typeof collections;
+  title: string;
+  dualImage?: boolean;
+}
+const { collection, title, dualImage = false } = Astro.props;
+
+const drinks = (await getCollection(collection))
+  .map((entry) => entry.data)
+  .filter((d) => d.available)
+  .sort((a, b) => a.order - b.order);
+---
+<Base title={`${title} · ${site.name}`}>
+  <SiteHeader />
+  <main>
+    <MenuGrid title={title} drinks={drinks} dualImage={dualImage} />
+  </main>
+  <SiteFooter />
+</Base>

@@ -6,12 +6,13 @@ import SiteFooter from '../components/SiteFooter.astro';
 import { site } from '../site.config';
 
 const coffeeCount = (await getCollection('coffee')).filter((e) => e.data.available).length;
+const refreshersCount = (await getCollection('refreshers')).filter((e) => e.data.available).length;
 
 // Menu sections shown on the landing page. `href` set = live; null = coming soon.
 const sections = [
   { name: 'Coffees', href: '/coffee', desc: 'Hot and iced espresso drinks, made with love.', count: coffeeCount },
   { name: 'Coffee Beans', href: null, desc: 'Flavored beans and house roasts, by the bag.', count: null },
-  { name: 'Refreshers', href: null, desc: 'Lemonades and refreshers — crisp and bright.', count: null },
+  { name: 'Refreshers', href: '/refreshers', desc: 'Lemonades and refreshers — crisp and bright.', count: refreshersCount },
   { name: 'Syrups', href: null, desc: 'A little sweetness to add to any drink.', count: null },
 ];
 ---
