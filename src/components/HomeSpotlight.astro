@@ -1,0 +1,245 @@
+---
+// Homepage slideshow — "what's new" banner driven by the Home Spotlight
+// Airtable table (see content.config.ts + README). Renders nothing if there
+// are no available slides, so an empty table just silently omits the section.
+interface Slide {
+  id: string;
+  name: string;
+  image: string;
+  caption: string;
+  tag: string;
+  link: string;
+}
+
+interface Props {
+  slides: Slide[];
+}
+const { slides } = Astro.props;
+---
+
+{slides.length > 0 && (
+  <section class="spotlight" aria-label="What's new at Love Poured Out">
+    <div class="spotlight__viewport">
+      <ul class="spotlight__track" role="list">
+        {slides.map((slide, i) => (
+          <li class="spotlight__slide" role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${slides.length}`}>
+            {slide.link ? (
+              <a class="spotlight__media" href={slide.link}>
+                <img src={slide.image} alt={slide.caption || slide.name} loading={i === 0 ? 'eager' : 'lazy'} width="1600" height="800" />
+              </a>
+            ) : (
+              <div class="spotlight__media">
+                <img src={slide.image} alt={slide.caption || slide.name} loading={i === 0 ? 'eager' : 'lazy'} width="1600" height="800" />
+              </div>
+            )}
+
+            {(slide.tag || slide.caption) && (
+              <div class="spotlight__overlay">
+                {slide.tag && <span class="spotlight__tag">{slide.tag}</span>}
+                {slide.caption && <p class="spotlight__caption">{slide.caption}</p>}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    {slides.length > 1 && (
+      <>
+        <button class="spotlight__arrow spotlight__arrow--prev" type="button" aria-label="Previous slide">&#8249;</button>
+        <button class="spotlight__arrow spotlight__arrow--next" type="button" aria-label="Next slide">&#8250;</button>
+        <div class="spotlight__dots" role="tablist" aria-label="Slides">
+          {slides.map((_, i) => (
+            <button class="spotlight__dot" type="button" role="tab" aria-label={`Go to slide ${i + 1}`} aria-selected={i === 0 ? 'true' : 'false'}></button>
+          ))}
+        </div>
+      </>
+    )}
+  </section>
+)}
+
+<style>
+  .spotlight {
+    position: relative;
+    max-width: var(--maxw);
+    margin: 2.2rem auto 0;
+    padding: 0 1.5rem;
+  }
+
+  .spotlight__viewport {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel);
+  }
+
+  .spotlight__track {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transition: transform 0.5s ease;
+  }
+
+  .spotlight__slide {
+    position: relative;
+    flex: 0 0 100%;
+    min-width: 0;
+  }
+
+  .spotlight__media {
+    display: block;
+    aspect-ratio: 2 / 1;
+    background: var(--panel);
+  }
+  .spotlight__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .spotlight__overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: clamp(1.2rem, 5vw, 2rem) clamp(1.2rem, 5vw, 2rem) clamp(1rem, 3vw, 1.4rem);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.35) 55%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    pointer-events: none;
+  }
+
+  .spotlight__tag {
+    align-self: flex-start;
+    font-family: var(--display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.85rem;
+    color: #05070b;
+    background: var(--blue);
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .spotlight__caption {
+    margin: 0;
+    max-width: 46ch;
+    font-family: var(--display);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    font-size: clamp(1.05rem, 3.2vw, 1.55rem);
+    line-height: 1.3;
+    color: var(--blue-bright);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  }
+
+  .spotlight__arrow {
+    position: absolute;
+    top: 50%;
+    translate: 0 -50%;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg) 55%, transparent);
+    color: var(--blue);
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  }
+  .spotlight__arrow:hover {
+    color: var(--blue-bright);
+    border-color: color-mix(in srgb, var(--blue) 55%, transparent);
+    background: color-mix(in srgb, var(--blue) 14%, transparent);
+  }
+  .spotlight__arrow:focus-visible { outline: 2px solid var(--blue-bright); outline-offset: 2px; }
+  .spotlight__arrow--prev { left: 1.9rem; }
+  .spotlight__arrow--next { right: 1.9rem; }
+  @media (max-width: 640px) {
+    .spotlight__arrow { width: 2.2rem; height: 2.2rem; font-size: 1.3rem; }
+    .spotlight__arrow--prev { left: 0.7rem; }
+    .spotlight__arrow--next { right: 0.7rem; }
+  }
+
+  .spotlight__dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.55rem;
+    margin-top: 0.9rem;
+  }
+  .spotlight__dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    padding: 0;
+    border-radius: 999px;
+    border: 1px solid var(--blue-deep);
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+  .spotlight__dot:focus-visible { outline: 2px solid var(--blue-bright); outline-offset: 2px; }
+  .spotlight__dot[aria-selected='true'] { background: var(--blue); transform: scale(1.15); }
+</style>
+
+<script>
+  // Transform-based carousel. Runs once per .spotlight instance (there's one
+  // on the homepage today, but this stays correct if that ever changes).
+  document.querySelectorAll<HTMLElement>('.spotlight').forEach((root) => {
+    const track = root.querySelector<HTMLElement>('.spotlight__track');
+    const slides = Array.from(root.querySelectorAll<HTMLElement>('.spotlight__slide'));
+    const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('.spotlight__dot'));
+    const prevBtn = root.querySelector<HTMLButtonElement>('.spotlight__arrow--prev');
+    const nextBtn = root.querySelector<HTMLButtonElement>('.spotlight__arrow--next');
+    if (!track || slides.length <= 1) return; // single/no slide: nothing to wire up
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let index = 0;
+    let timer: number | undefined;
+
+    function render() {
+      track!.style.transform = `translateX(-${index * 100}%)`;
+      dots.forEach((d, i) => d.setAttribute('aria-selected', i === index ? 'true' : 'false'));
+    }
+    function go(i: number) {
+      index = (i + slides.length) % slides.length;
+      render();
+    }
+    function next() { go(index + 1); }
+    function prev() { go(index - 1); }
+
+    function stop() {
+      if (timer !== undefined) window.clearInterval(timer);
+      timer = undefined;
+    }
+    function start() {
+      if (reduceMotion) return; // respect the user's motion preference — no autoplay
+      stop();
+      timer = window.setInterval(next, 6000);
+    }
+
+    nextBtn?.addEventListener('click', () => { next(); start(); });
+    prevBtn?.addEventListener('click', () => { prev(); start(); });
+    dots.forEach((dot, i) => dot.addEventListener('click', () => { go(i); start(); }));
+
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', start);
+    root.addEventListener('focusin', stop);
+    root.addEventListener('focusout', start);
+
+    // Basic touch-swipe support.
+    let touchStartX = 0;
+    root.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; stop(); }, { passive: true });
+    root.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (dx > 40) prev();
+      else if (dx < -40) next();
+      start();
+    });
+
+    render();
+    start();
+  });
+</script>

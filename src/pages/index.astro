@@ -3,10 +3,19 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import HomeSpotlight from '../components/HomeSpotlight.astro';
 import { site } from '../site.config';
 
 const coffeeCount = (await getCollection('coffee')).filter((e) => e.data.available).length;
 const refreshersCount = (await getCollection('refreshers')).filter((e) => e.data.available).length;
+
+// Homepage slideshow — driven by the Home Spotlight Airtable table. Same
+// filter/sort convention as the menu pages: hide unavailable rows, respect
+// the Order fallback (the Airtable view order wins when credentials are set).
+const spotlightSlides = (await getCollection('spotlight'))
+  .map((entry) => entry.data)
+  .filter((s) => s.available)
+  .sort((a, b) => a.order - b.order);
 
 // Menu sections shown on the landing page. `href` set = live; null = coming soon.
 const sections = [
@@ -51,6 +60,8 @@ const sections = [
       <span class="construction__stripes construction__stripes--bottom" aria-hidden="true"></span>
     </div>
   </section>
+
+  <HomeSpotlight slides={spotlightSlides} />
 
   <main>
     <nav class="section-nav" aria-label="Menu sections">

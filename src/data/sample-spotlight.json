@@ -1,0 +1,42 @@
+[
+  {
+    "id": "sample-fall-collection",
+    "name": "Fall Collection Launch",
+    "image": "/samples/spotlight/fall-collection-launch.png",
+    "caption": "The Fall Collection has landed — Pumpkin Spice, Maple Bourbon & more",
+    "tag": "New",
+    "link": "/coffee",
+    "order": 10,
+    "available": true
+  },
+  {
+    "id": "sample-refreshers",
+    "name": "Refreshers Are Here",
+    "image": "/samples/spotlight/refreshers-are-here.png",
+    "caption": "Cool down with our new lineup of fruit refreshers",
+    "tag": "New",
+    "link": "/refreshers",
+    "order": 20,
+    "available": true
+  },
+  {
+    "id": "sample-peppermint-season",
+    "name": "Peppermint Season",
+    "image": "/samples/spotlight/peppermint-season.png",
+    "caption": "Our peppermint drinks are back for a limited time",
+    "tag": "Seasonal",
+    "link": "",
+    "order": 30,
+    "available": true
+  },
+  {
+    "id": "sample-holiday-blend",
+    "name": "Holiday Blend Beans",
+    "image": "/samples/spotlight/holiday-blend-beans.png",
+    "caption": "Take our Holiday Blend home by the bag",
+    "tag": "Back by Popular Demand",
+    "link": "",
+    "order": 40,
+    "available": true
+  }
+]
