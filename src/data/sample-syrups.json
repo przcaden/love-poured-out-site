@@ -1,0 +1,68 @@
+[
+  {
+    "id": "sample-vanilla-bean",
+    "name": "Vanilla Bean",
+    "description": "A classic, smooth vanilla syrup that pairs with just about anything on the menu. Made in small batches.",
+    "price": "1.00",
+    "releaseDate": "",
+    "order": 5,
+    "available": true,
+    "seasonal": false,
+    "image": "/samples/syrups/vanilla-bean-syrup.png"
+  },
+  {
+    "id": "sample-caramel",
+    "name": "Caramel",
+    "description": "Buttery, rich caramel syrup — a little sweetness for your favorite hot or iced drink.",
+    "price": "1.00",
+    "releaseDate": "",
+    "order": 10,
+    "available": true,
+    "seasonal": false,
+    "image": "/samples/syrups/caramel-syrup.png"
+  },
+  {
+    "id": "sample-hazelnut",
+    "name": "Hazelnut",
+    "description": "Warm, nutty hazelnut syrup with a smooth finish. A cozy add-in for lattes and mochas alike.",
+    "price": "1.00",
+    "releaseDate": "",
+    "order": 20,
+    "available": true,
+    "seasonal": false,
+    "image": "/samples/syrups/hazelnut-syrup.png"
+  },
+  {
+    "id": "sample-cinnamon-honey",
+    "name": "Cinnamon Honey",
+    "description": "A gentle blend of cinnamon spice and real honey sweetness — comfort in every drop.",
+    "price": "1.25",
+    "releaseDate": "",
+    "order": 30,
+    "available": true,
+    "seasonal": false,
+    "image": "/samples/syrups/cinnamon-honey-syrup.png"
+  },
+  {
+    "id": "sample-peppermint",
+    "name": "Peppermint",
+    "description": "Cool, crisp peppermint syrup — a holiday favorite stirred into any hot or iced coffee.",
+    "price": "1.25",
+    "releaseDate": "Coming Winter 2026",
+    "order": 40,
+    "available": true,
+    "seasonal": true,
+    "image": "/samples/syrups/peppermint-syrup.png"
+  },
+  {
+    "id": "sample-pumpkin-spice",
+    "name": "Pumpkin Spice",
+    "description": "Warm pumpkin and fall spices in a syrup made for the season. A customer favorite, back every autumn.",
+    "price": "1.25",
+    "releaseDate": "Coming Fall 2026",
+    "order": 50,
+    "available": true,
+    "seasonal": true,
+    "image": "/samples/syrups/pumpkin-spice-syrup.png"
+  }
+]

@@ -307,6 +307,6 @@ export const collections = {
   coffee: menuCollection('Coffees', 'sample-coffee.json'),
   refreshers: menuCollection('Refreshers', 'sample-refreshers.json'),
   beans: menuCollection('Beans', 'sample-beans.json'),
-  // syrups: menuCollection('House Syrups', 'sample-syrups.json'),
+  syrups: menuCollection('Syrups', 'sample-syrups.json'),
   spotlight: spotlightCollection('Home Spotlight', 'sample-spotlight.json'),
 };

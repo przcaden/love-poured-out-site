@@ -16,6 +16,11 @@ interface Props {
   // Used by Beans; every other page leaves this off and keeps today's layout.
   flexibleAspect?: boolean;
   imageAspect?: number;
+  // A single fixed aspect ratio (any CSS aspect-ratio value, e.g. "2 / 3")
+  // applied to every card on the page — for a page whose photos are all the
+  // same shape by convention rather than varying per item. Used by Syrups.
+  // Mutually exclusive with flexibleAspect in practice (a page picks one).
+  fixedAspect?: number | string;
   index?: number;
 }
 const {
@@ -32,8 +37,15 @@ const {
   dualImage = false,
   flexibleAspect = false,
   imageAspect = 1,
+  fixedAspect,
   index = 0,
 } = Astro.props;
+
+// Resolve to a single value for the --media-aspect custom property: the
+// per-item snapped ratio when flexibleAspect is on (Beans), else the page's
+// fixedAspect when set (Syrups), else undefined — which leaves the CSS
+// default (4/5) untouched, exactly as before either feature existed.
+const mediaAspect = flexibleAspect ? imageAspect : fixedAspect;
 
 // Owners can type "$4.50", "4.5", or "Market" — show a bare number as currency,
 // otherwise print exactly what they wrote.
@@ -62,7 +74,7 @@ const thumb = image || hotImage || icedImage;
 const showPair = dualImage && !!hotImage && !!icedImage;
 ---
 
-<article class="card" style={`--i:${index};${flexibleAspect ? `--media-aspect:${imageAspect};` : ''}`}>
+<article class="card" style={`--i:${index};${mediaAspect !== undefined ? `--media-aspect:${mediaAspect};` : ''}`}>
   {/*
     The whole card is a single trigger that opens the popup. It's a sibling button
     stretched over the card (rather than wrapping the content) so the heading stays a

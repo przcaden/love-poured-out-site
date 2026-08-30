@@ -13,10 +13,13 @@ Brand text (name, tagline, verse, mission, contact) all lives in
 
 - **Home** (`/`) — brand landing page with navigation to each menu section.
 - **Coffees** (`/coffee`) — the coffee-drinks menu, read from the `Coffees` table.
-- **Coffee Beans** (`/beans`) — bagged beans/roasts, read from the `Coffee Beans` table.
+- **Coffee Beans** (`/beans`) — bagged beans/roasts, read from the `Beans` table.
 - **Refreshers** (`/refreshers`) — lemonades and refreshers, read from the `Refreshers` table.
+- **Syrups** (`/syrups`) — flavor syrups, read from the `Syrups` table.
 
-More section pages (syrups) are planned; see *Adding another page* below.
+Every planned section page now exists; see *Adding another page* below if you
+add a new one later (an "Our Story" info page and a Contact page are still
+plain content, not Airtable-driven, and aren't covered by this pattern).
 
 ---
 
@@ -44,8 +47,8 @@ The header links are also defined in `src/site.config.ts`, in the `nav` array.
 Each item is either a live link or greyed out (not yet built):
 
 ```ts
-{ label: 'Coffee Beans', href: null },   // greyed out, no link
-{ label: 'Coffee Beans', href: '/beans' } // live link once the page exists
+{ label: 'Syrups', href: null },    // greyed out, no link
+{ label: 'Syrups', href: '/syrups' } // live link once the page exists
 ```
 
 To turn a section on, build its page (see *Adding another page*) and set its
@@ -57,7 +60,10 @@ To turn a section on, build its page (see *Adding another page*) and set its
 ## Airtable setup
 
 **One base, one table per page.** Each page reads its own table, so the coffee
-page reads a table named `Coffees`. Give every table these fields:
+page reads a table named `Coffees`. `Collection` and `Roast` are optional —
+leave them off a table entirely if a page doesn't use them (Syrups doesn't;
+its card just omits the roast pips and collection line automatically). Give
+every table these fields:
 
 | Field         | Type             | Purpose                                            |
 | ------------- | ---------------- | -------------------------------------------------- |
@@ -67,7 +73,7 @@ page reads a table named `Coffees`. Give every table these fields:
 | `Description`  | Long text        | Short description shown under the name             |
 | `Release Date` | Single line TEXT | Free-text label, e.g. `Coming Fall 2026`. Use a **text** field, not a Date field (optional) |
 | `Price`        | Currency or text | `4.50` shows as `$4.50`; free text shows as typed. Leave blank for coming-soon items |
-| `Photo`        | Attachment       | One image per drink                                |
+| `Photo`/`Image`| Attachment       | One image per drink — see the aspect-ratio notes below for Beans/Syrups |
 | `Order`        | Number           | Lower numbers first (fallback ordering)            |
 | `Available`    | Checkbox         | Unchecked = hidden from the site (a soft "remove") |
 | `Seasonal`     | Checkbox         | Adds a small "Seasonal" tag to the card            |
@@ -95,6 +101,15 @@ there's nothing to configure per-row. A photo shot far outside both ratios
 (e.g. a tall portrait) still displays without cropping, just with a little
 letterboxing inside the nearer box. Only the Beans page behaves this way —
 Coffees and Refreshers keep their existing fixed image box.
+
+### Syrups — photo aspect ratio
+
+Syrup bottle photos are a consistent shape by nature, so unlike Beans, the
+Syrups page (`/syrups`) doesn't snap per-photo — every card's image box is a
+fixed **2:3 portrait** ratio (a typical bottle-photo shape), set once for the
+whole page. Shoot each bottle photo close to 2:3 (roughly twice as tall as it
+is wide) for the best fit; a photo shot a different shape still displays in
+full, just letterboxed inside that 2:3 box rather than cropped.
 
 ### Credentials
 
@@ -157,18 +172,23 @@ or two, re-pulling every table and re-downloading fresh images.
 
 ## Adding another page
 
-To add, say, the Syrups page:
+Every page described in *Structure* above now exists, but the pattern is the
+same for any future one — say a `Seasonal Drinks` page:
 
-1. In Airtable, create a `House Syrups` table with the same fields.
-2. In `src/content.config.ts`, uncomment / add the collection:
-   `syrups: menuCollection('House Syrups', 'sample-syrups.json'),`
-3. Add `src/data/sample-syrups.json` (copy an existing sample file).
-4. Create `src/pages/syrups.astro` (copy `refreshers.astro`, swap the collection
-   name and title — add `flexibleAspect={true}` too if syrup bottle photos
-   won't be a consistent shape, the way Beans does).
-5. In `src/site.config.ts`, give that `nav` item a `href: '/syrups'`.
-6. In `src/pages/index.astro`, fetch its count the same way `beansCount` is
-   fetched, and give that section a `href: '/syrups'`.
+1. In Airtable, create a `Seasonal Drinks` table with the fields it needs
+   (skip `Collection`/`Roast` if it won't use them, the way Syrups does).
+2. In `src/content.config.ts`, add the collection:
+   `seasonal: menuCollection('Seasonal Drinks', 'sample-seasonal.json'),`
+3. Add `src/data/sample-seasonal.json` (copy an existing sample file's shape).
+4. Create `src/pages/seasonal.astro` (copy `syrups.astro` or `refreshers.astro`,
+   swap the collection name and title). Pick at most one image-box behavior:
+   `flexibleAspect={true}` if photos vary in shape per item and should snap to
+   1:1 or 4:3 (like Beans), or `fixedAspect="2 / 3"` (or any CSS aspect-ratio
+   value) if every photo on the page is one consistent shape (like Syrups).
+   Leave both off to keep the original fixed 4:5 box (like Coffees/Refreshers).
+5. In `src/site.config.ts`, give that `nav` item a `href: '/seasonal'`.
+6. In `src/pages/index.astro`, fetch its count the same way `syrupsCount` is
+   fetched, and give that section a `href: '/seasonal'`.
 
 ---
 
@@ -182,6 +202,7 @@ src/
     sample-coffee.json     # placeholder coffee drinks (used with no credentials)
     sample-refreshers.json # placeholder refreshers
     sample-beans.json      # placeholder bagged beans (mix of 1:1 and 4:3 photos)
+    sample-syrups.json     # placeholder syrups (all fixed 2:3 photos)
   layouts/Base.astro      # <head>, fonts, global styles
   components/
     SiteHeader.astro      # slim logo header for interior pages
@@ -194,11 +215,13 @@ src/
     index.astro           # home landing + section navigation
     coffee.astro           # /coffee — reads the Coffees table
     refreshers.astro       # /refreshers — reads the Refreshers table
-    beans.astro             # /beans — reads the Coffee Beans table
+    beans.astro             # /beans — reads the Beans table
+    syrups.astro            # /syrups — reads the Syrups table
   styles/global.css       # design tokens + layout
 scripts/
   generate-spotlight-samples.mjs # regenerates the placeholder spotlight art
   generate-beans-samples.mjs     # regenerates the placeholder bean-bag art
+  generate-syrups-samples.mjs    # regenerates the placeholder syrup-bottle art
 public/
   logo.png                # brand logo (also the favicon)
   samples/                # placeholder images for sample data
@@ -207,7 +230,7 @@ public/
 
 ## Possible next steps
 
-- **Syrups page** — follow *Adding another page*.
+- **Our Story / Contact pages** — still plain content, not wired to Airtable.
 - **Contact form** — the footer has a `mailto:` link; swap in Formspree or a
   Cloudflare/Netlify form when ready.
 - **Image optimization** — images are downscaled and re-encoded as WebP at

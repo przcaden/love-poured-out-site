@@ -9,7 +9,9 @@
 // (add `dualImage={true}` only for a page that ships paired hot/iced images,
 // like Coffees; add `flexibleAspect={true}` for a page whose photos are
 // square or 4:3 product shots rather than the default portrait card box,
-// like Beans).
+// like Beans; add `fixedAspect="2 / 3"` (or any CSS aspect-ratio value) for a
+// page where every photo is one consistent shape by convention, like Syrups —
+// don't combine flexibleAspect and fixedAspect on the same page).
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import SiteHeader from './SiteHeader.astro';
@@ -23,8 +25,9 @@ interface Props {
   title: string;
   dualImage?: boolean;
   flexibleAspect?: boolean;
+  fixedAspect?: number | string;
 }
-const { collection, title, dualImage = false, flexibleAspect = false } = Astro.props;
+const { collection, title, dualImage = false, flexibleAspect = false, fixedAspect } = Astro.props;
 
 const drinks = (await getCollection(collection))
   .map((entry) => entry.data)
@@ -34,7 +37,7 @@ const drinks = (await getCollection(collection))
 <Base title={`${title} · ${site.name}`}>
   <SiteHeader />
   <main>
-    <MenuGrid title={title} drinks={drinks} dualImage={dualImage} flexibleAspect={flexibleAspect} />
+    <MenuGrid title={title} drinks={drinks} dualImage={dualImage} flexibleAspect={flexibleAspect} fixedAspect={fixedAspect} />
   </main>
   <SiteFooter />
 </Base>
