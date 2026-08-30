@@ -11,6 +11,11 @@ interface Props {
   collection?: string;
   releaseDate?: string;
   dualImage?: boolean;
+  // When true, the card's image box takes on this item's own aspect ratio
+  // (1:1 or 4:3 — see content.config.ts) instead of the fixed default box.
+  // Used by Beans; every other page leaves this off and keeps today's layout.
+  flexibleAspect?: boolean;
+  imageAspect?: number;
   index?: number;
 }
 const {
@@ -25,6 +30,8 @@ const {
   collection = '',
   releaseDate = '',
   dualImage = false,
+  flexibleAspect = false,
+  imageAspect = 1,
   index = 0,
 } = Astro.props;
 
@@ -55,7 +62,7 @@ const thumb = image || hotImage || icedImage;
 const showPair = dualImage && !!hotImage && !!icedImage;
 ---
 
-<article class="card" style={`--i:${index}`}>
+<article class="card" style={`--i:${index};${flexibleAspect ? `--media-aspect:${imageAspect};` : ''}`}>
   {/*
     The whole card is a single trigger that opens the popup. It's a sibling button
     stretched over the card (rather than wrapping the content) so the heading stays a
@@ -197,7 +204,10 @@ const showPair = dualImage && !!hotImage && !!icedImage;
   }
 
   .card__media {
-    aspect-ratio: 4 / 5;     /* width : height — raise the 2nd number for a taller image */
+    /* width : height — a page can override per-card via --media-aspect
+       (set inline when flexibleAspect is on); every other page falls back
+       to this fixed portrait box, unchanged from before. */
+    aspect-ratio: var(--media-aspect, 4 / 5);
     overflow: hidden;
     border-radius: 14px;
     background: var(--panel);
@@ -309,7 +319,7 @@ const showPair = dualImage && !!hotImage && !!icedImage;
     gap: 0.45rem;
   }
   .drink-modal__media {
-    aspect-ratio: 4 / 5;             /* match the card image */
+    aspect-ratio: var(--media-aspect, 4 / 5); /* matches the card image box */
     overflow: hidden;
     border-radius: 14px;
     background: var(--panel);

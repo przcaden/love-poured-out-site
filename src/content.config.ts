@@ -29,6 +29,24 @@ const IMAGE_MAX_WIDTH = 1000;
 // inside a small card, so they get a wider cap than the drink thumbnails above.
 const SPOTLIGHT_IMAGE_MAX_WIDTH = 1600;
 
+// Pages that opt into `flexibleAspect` (currently Beans) size each card's image
+// box to the photo's own shape instead of a fixed box, but only ever snap to
+// one of these two ratios (width / height) — a square bag-of-beans flat lay
+// (1:1) or a landscape product shot (4:3) — so the grid still reads as a
+// consistent, designed layout no matter what the owner uploads. Anything shot
+// close to either ratio (a slightly-off phone photo included) snaps to the
+// nearer one; object-fit: contain is still the safety net for a true outlier.
+const SQUARE_ASPECT = 1;
+const LANDSCAPE_ASPECT = 4 / 3;
+// geometric midpoint between the two supported ratios — the natural cutoff
+// for "closer to square" vs. "closer to 4:3" on a log scale
+const ASPECT_SNAP_THRESHOLD = Math.sqrt(SQUARE_ASPECT * LANDSCAPE_ASPECT);
+function snapAspect(width: number, height: number): number {
+  if (!width || !height) return SQUARE_ASPECT;
+  const ratio = width / height;
+  return ratio < ASPECT_SNAP_THRESHOLD ? SQUARE_ASPECT : LANDSCAPE_ASPECT;
+}
+
 // Read an env var from either import.meta.env (local .env) or process.env (CI).
 // Accepts several aliases and returns the first one that's set, so both the
 // documented names (AIRTABLE_TOKEN / AIRTABLE_BASE) and the alternates
@@ -58,6 +76,11 @@ const menuSchema = z.object({
   image: z.string().default(''),      // generic single image ("Photo" field), used by single-image pages
   hotImage: z.string().default(''),   // Coffees: "Hot Coffee Image" attachment
   icedImage: z.string().default(''),  // Coffees: "Iced Coffee Image" attachment
+  // Snapped aspect ratio (width / height — 1 or 4/3) of `image`, only ever read
+  // by a page rendered with `flexibleAspect` (currently Beans); every other
+  // page ignores it and keeps its fixed card-image box, so this can't change
+  // how Coffees/Refreshers already look.
+  imageAspect: z.number().default(1),
 });
 
 interface MenuEntry {
@@ -74,6 +97,7 @@ interface MenuEntry {
   image: string;
   hotImage: string;
   icedImage: string;
+  imageAspect: number;
 }
 
 // `key` is the filename stem. A record can have more than one attachment
@@ -83,22 +107,24 @@ async function cacheImage(
   photo: { url: string },
   key: string,
   maxWidth: number = IMAGE_MAX_WIDTH,
-): Promise<string> {
+): Promise<{ path: string; aspect: number }> {
   const filename = `${key}.webp`;
   const res = await fetch(photo.url); // URL is fresh — issued moments ago by this build
   if (!res.ok) throw new Error(`Image download failed for ${key}: ${res.status}`);
   // Downscale + re-encode so the browser isn't pulling multi-MB originals.
   // .rotate() with no args applies EXIF orientation, so phone photos that were
   // shot sideways don't render rotated. withoutEnlargement keeps small images
-  // from being upscaled (and blurred).
-  const optimized = await sharp(Buffer.from(await res.arrayBuffer()))
+  // from being upscaled (and blurred). resolveWithObject also hands back the
+  // OUTPUT dimensions (post-rotate, post-resize) so callers can read the
+  // photo's actual aspect ratio without a second pass over the file.
+  const { data: optimized, info } = await sharp(Buffer.from(await res.arrayBuffer()))
     .rotate()
     .resize({ width: maxWidth, withoutEnlargement: true })
     .webp({ quality: 80 })
-    .toBuffer();
+    .toBuffer({ resolveWithObject: true });
   await fs.mkdir(IMAGE_DIR, { recursive: true });
   await fs.writeFile(path.join(IMAGE_DIR, filename), optimized);
-  return `/menu-images/${filename}`;
+  return { path: `/menu-images/${filename}`, aspect: snapAspect(info.width, info.height) };
 }
 
 // Airtable attachment fields come back as an array; grab the first attachment.
@@ -141,10 +167,14 @@ async function loadFromAirtable(table: string): Promise<MenuEntry[]> {
     const icedPhoto = firstAttachment(f['Iced Coffee Image']);
     const photo = firstPhoto(f);
 
-    const hotImage = hotPhoto ? await cacheImage(hotPhoto, `${rec.id}-hot`) : '';
-    const icedImage = icedPhoto ? await cacheImage(icedPhoto, `${rec.id}-ice`) : '';
+    const hotCached = hotPhoto ? await cacheImage(hotPhoto, `${rec.id}-hot`) : null;
+    const icedCached = icedPhoto ? await cacheImage(icedPhoto, `${rec.id}-ice`) : null;
+    const photoCached = photo ? await cacheImage(photo, rec.id) : null;
+    const hotImage = hotCached?.path ?? '';
+    const icedImage = icedCached?.path ?? '';
     // Fall back to the hot image so the summary card always has a thumbnail.
-    const image = photo ? await cacheImage(photo, rec.id) : hotImage;
+    const image = photoCached?.path ?? hotImage;
+    const imageAspect = photoCached?.aspect ?? hotCached?.aspect ?? 1;
 
     entries.push({
       id: rec.id,
@@ -164,6 +194,7 @@ async function loadFromAirtable(table: string): Promise<MenuEntry[]> {
       image,
       hotImage,
       icedImage,
+      imageAspect,
     });
     position++;
   }
@@ -241,7 +272,7 @@ async function loadSpotlightFromAirtable(table: string): Promise<SpotlightEntry[
     if (!f.Name) continue; // skip empty rows
 
     const photo = firstAttachment(f.Image);
-    const image = photo ? await cacheImage(photo, `spotlight-${rec.id}`, SPOTLIGHT_IMAGE_MAX_WIDTH) : '';
+    const image = photo ? (await cacheImage(photo, `spotlight-${rec.id}`, SPOTLIGHT_IMAGE_MAX_WIDTH)).path : '';
 
     entries.push({
       id: rec.id,
@@ -275,7 +306,7 @@ function spotlightCollection(table: string, sampleFile: string) {
 export const collections = {
   coffee: menuCollection('Coffees', 'sample-coffee.json'),
   refreshers: menuCollection('Refreshers', 'sample-refreshers.json'),
-  // beans:  menuCollection('Coffee Beans', 'sample-beans.json'),
+  beans: menuCollection('Beans', 'sample-beans.json'),
   // syrups: menuCollection('House Syrups', 'sample-syrups.json'),
   spotlight: spotlightCollection('Home Spotlight', 'sample-spotlight.json'),
 };

@@ -13,9 +13,10 @@ Brand text (name, tagline, verse, mission, contact) all lives in
 
 - **Home** (`/`) — brand landing page with navigation to each menu section.
 - **Coffees** (`/coffee`) — the coffee-drinks menu, read from the `Coffees` table.
+- **Coffee Beans** (`/beans`) — bagged beans/roasts, read from the `Coffee Beans` table.
+- **Refreshers** (`/refreshers`) — lemonades and refreshers, read from the `Refreshers` table.
 
-More section pages (beans, refreshers, syrups) are planned; see *Adding another
-page* below.
+More section pages (syrups) are planned; see *Adding another page* below.
 
 ---
 
@@ -79,6 +80,22 @@ a backup.
 **Removing a drink:** uncheck `Available` (recommended — lets you bring seasonal
 items back later) or delete the row.
 
+### Coffee Beans — photo aspect ratio
+
+Bagged-beans photos usually aren't the same shape as a drink cup photo, so the
+Beans page (`/beans`) sizes each card's image box to that row's own `Image`
+attachment instead of forcing every photo into one fixed shape. At build time
+every photo is snapped to whichever of these two ratios it's closer to:
+
+- **1:1 (square)** — a flat-lay shot of the bag from above.
+- **4:3 (landscape)** — a bag photographed at an angle or on its side.
+
+Shoot in either ratio and it'll render correctly, uncropped and undistorted;
+there's nothing to configure per-row. A photo shot far outside both ratios
+(e.g. a tall portrait) still displays without cropping, just with a little
+letterboxing inside the nearer box. Only the Beans page behaves this way —
+Coffees and Refreshers keep their existing fixed image box.
+
 ### Credentials
 
 Create an Airtable **personal access token** at
@@ -140,15 +157,18 @@ or two, re-pulling every table and re-downloading fresh images.
 
 ## Adding another page
 
-To add, say, the Refreshers page:
+To add, say, the Syrups page:
 
-1. In Airtable, create a `Refreshers` table with the same fields.
+1. In Airtable, create a `House Syrups` table with the same fields.
 2. In `src/content.config.ts`, uncomment / add the collection:
-   `refreshers: menuCollection('Refreshers', 'sample-refreshers.json'),`
-3. Add `src/data/sample-refreshers.json` (copy an existing sample file).
-4. Create `src/pages/refreshers.astro` (copy `coffee.astro`, swap the collection
-   name and title).
-5. In `src/pages/index.astro`, give that section a `href: '/refreshers'`.
+   `syrups: menuCollection('House Syrups', 'sample-syrups.json'),`
+3. Add `src/data/sample-syrups.json` (copy an existing sample file).
+4. Create `src/pages/syrups.astro` (copy `refreshers.astro`, swap the collection
+   name and title — add `flexibleAspect={true}` too if syrup bottle photos
+   won't be a consistent shape, the way Beans does).
+5. In `src/site.config.ts`, give that `nav` item a `href: '/syrups'`.
+6. In `src/pages/index.astro`, fetch its count the same way `beansCount` is
+   fetched, and give that section a `href: '/syrups'`.
 
 ---
 
@@ -159,17 +179,26 @@ src/
   site.config.ts          # cafe name, tagline, verse, mission, contact
   content.config.ts       # per-table collections + image caching + sample fallback
   data/
-    sample-coffee.json    # placeholder coffee drinks (used with no credentials)
+    sample-coffee.json     # placeholder coffee drinks (used with no credentials)
+    sample-refreshers.json # placeholder refreshers
+    sample-beans.json      # placeholder bagged beans (mix of 1:1 and 4:3 photos)
   layouts/Base.astro      # <head>, fonts, global styles
   components/
     SiteHeader.astro      # slim logo header for interior pages
     SiteFooter.astro      # shared footer (mission, contact)
+    HomeSpotlight.astro   # homepage slideshow
+    MenuPage.astro        # shared page shell (fetch → filter → sort → render)
     MenuGrid.astro        # section title + responsive card grid
-    DrinkCard.astro       # a single drink card
+    DrinkCard.astro       # a single drink card + its detail popup
   pages/
     index.astro           # home landing + section navigation
-    coffee.astro          # /coffee — reads the Coffees table
+    coffee.astro           # /coffee — reads the Coffees table
+    refreshers.astro       # /refreshers — reads the Refreshers table
+    beans.astro             # /beans — reads the Coffee Beans table
   styles/global.css       # design tokens + layout
+scripts/
+  generate-spotlight-samples.mjs # regenerates the placeholder spotlight art
+  generate-beans-samples.mjs     # regenerates the placeholder bean-bag art
 public/
   logo.png                # brand logo (also the favicon)
   samples/                # placeholder images for sample data
@@ -178,8 +207,9 @@ public/
 
 ## Possible next steps
 
-- **Beans / Refreshers / Syrups pages** — follow *Adding another page*.
+- **Syrups page** — follow *Adding another page*.
 - **Contact form** — the footer has a `mailto:` link; swap in Formspree or a
   Cloudflare/Netlify form when ready.
-- **Image optimization** — images are stored at original size; resize in the
-  loader (e.g. with `sharp`) for faster loads.
+- **Image optimization** — images are downscaled and re-encoded as WebP at
+  build time already (see *Why images are downloaded at build time*); further
+  gains would mean serving responsive `srcset` sizes per breakpoint.

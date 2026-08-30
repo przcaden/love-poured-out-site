@@ -8,6 +8,7 @@ import { site } from '../site.config';
 
 const coffeeCount = (await getCollection('coffee')).filter((e) => e.data.available).length;
 const refreshersCount = (await getCollection('refreshers')).filter((e) => e.data.available).length;
+const beansCount = (await getCollection('beans')).filter((e) => e.data.available).length;
 
 // Homepage slideshow — driven by the Home Spotlight Airtable table. Same
 // filter/sort convention as the menu pages: hide unavailable rows, respect
@@ -20,7 +21,7 @@ const spotlightSlides = (await getCollection('spotlight'))
 // Menu sections shown on the landing page. `href` set = live; null = coming soon.
 const sections = [
   { name: 'Coffees', href: '/coffee', desc: 'Hot and iced espresso drinks, made with love.', count: coffeeCount },
-  { name: 'Coffee Beans', href: null, desc: 'Flavored beans and house roasts, by the bag.', count: null },
+  { name: 'Coffee Beans', href: '/beans', desc: 'Flavored beans and house roasts, by the bag.', count: beansCount },
   { name: 'Refreshers', href: '/refreshers', desc: 'Lemonades and refreshers — crisp and bright.', count: refreshersCount },
   { name: 'Syrups', href: null, desc: 'A little sweetness to add to any drink.', count: null },
 ];

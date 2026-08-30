@@ -7,7 +7,9 @@
 // To add a new menu page once its Airtable table + collection exist:
 //   <MenuPage collection="yourCollectionKey" title="Your Title" />
 // (add `dualImage={true}` only for a page that ships paired hot/iced images,
-// like Coffees).
+// like Coffees; add `flexibleAspect={true}` for a page whose photos are
+// square or 4:3 product shots rather than the default portrait card box,
+// like Beans).
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import SiteHeader from './SiteHeader.astro';
@@ -20,8 +22,9 @@ interface Props {
   collection: keyof typeof collections;
   title: string;
   dualImage?: boolean;
+  flexibleAspect?: boolean;
 }
-const { collection, title, dualImage = false } = Astro.props;
+const { collection, title, dualImage = false, flexibleAspect = false } = Astro.props;
 
 const drinks = (await getCollection(collection))
   .map((entry) => entry.data)
@@ -31,7 +34,7 @@ const drinks = (await getCollection(collection))
 <Base title={`${title} · ${site.name}`}>
   <SiteHeader />
   <main>
-    <MenuGrid title={title} drinks={drinks} dualImage={dualImage} />
+    <MenuGrid title={title} drinks={drinks} dualImage={dualImage} flexibleAspect={flexibleAspect} />
   </main>
   <SiteFooter />
 </Base>

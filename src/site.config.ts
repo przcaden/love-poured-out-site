@@ -19,7 +19,7 @@ export const nav: { label: string; href: string | null }[] = [
   { label: 'Home', href: '/' },
   { label: 'Our Story', href: null },
   { label: 'Coffees', href: '/coffee' },
-  { label: 'Coffee Beans', href: null },
+  { label: 'Coffee Beans', href: '/beans' },
   { label: 'Refreshers', href: '/refreshers' },
   { label: 'Syrups', href: null },
   { label: 'Contact', href: null },

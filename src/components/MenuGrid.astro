@@ -14,13 +14,15 @@ interface Drink {
   releaseDate?: string;
   order?: number;
   available?: boolean;
+  imageAspect?: number;
 }
 interface Props {
   title: string;
   drinks: Drink[];
   dualImage?: boolean;
+  flexibleAspect?: boolean;
 }
-const { title, drinks, dualImage = false } = Astro.props;
+const { title, drinks, dualImage = false, flexibleAspect = false } = Astro.props;
 ---
 <div class="section-head">
   <p class="section-head__title"><span>♡</span> {title} <span>♡</span></p>
@@ -46,6 +48,8 @@ const { title, drinks, dualImage = false } = Astro.props;
         collection={d.collection}
         releaseDate={d.releaseDate}
         dualImage={dualImage}
+        flexibleAspect={flexibleAspect}
+        imageAspect={d.imageAspect}
         index={i}
       />
     ))}
