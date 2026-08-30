@@ -101,7 +101,7 @@ const firstAttachment = (field: unknown): { url: string; type?: string } | null 
 // name) or "Image" (used by Refreshers and on). Whichever is present wins.
 const firstPhoto = (f: Record<string, any>) => firstAttachment(f.Photo) ?? firstAttachment(f.Image);
 
-async function loadFromAirtable(table: string): Promise<MenuEntry[]> {
+async function loadFromAirtable(table: string, fields?: string[]): Promise<MenuEntry[]> {
   const token = env(...TOKEN_KEYS)!;
   const base = env(...BASE_KEYS)!;
   // Records come back in the order of this view, so the owner can drag rows to
@@ -114,6 +114,14 @@ async function loadFromAirtable(table: string): Promise<MenuEntry[]> {
     const url = new URL(`https://api.airtable.com/v0/${base}/${encodeURIComponent(table)}`);
     url.searchParams.set('view', view);
     if (offset) url.searchParams.set('offset', offset);
+    // Only ask Airtable for these columns — lets a table that dropped a column
+    // (e.g. Refreshers no longer has "Roast") skip requesting it entirely,
+    // rather than relying on the response simply not including it. "Name" is
+    // added even if the caller's list omits it, since the empty-row filter
+    // below depends on it.
+    if (fields?.length) {
+      for (const name of new Set([...fields, 'Name'])) url.searchParams.append('fields[]', name);
+    }
     const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
     if (!res.ok) throw new Error(`Airtable request failed for "${table}": ${res.status} ${await res.text()}`);
     const json = (await res.json()) as { records: typeof records; offset?: string };
@@ -168,11 +176,14 @@ async function loadSample(file: string): Promise<MenuEntry[]> {
 }
 
 // Build a collection bound to one Airtable table, with a sample-data fallback.
-function menuCollection(table: string, sampleFile: string) {
+// `fields`, if given, restricts which Airtable columns are requested for this
+// table — omit a column here when a table doesn't have it (see ALL_MENU_FIELDS
+// below). Leave unset to request every column, which is the safe default.
+function menuCollection(table: string, sampleFile: string, fields?: string[]) {
   return defineCollection({
     loader: async () => {
       if (env(...TOKEN_KEYS) && env(...BASE_KEYS)) {
-        return loadFromAirtable(table);
+        return loadFromAirtable(table, fields);
       }
       console.warn(`[${table}] No Airtable credentials — using sample data (src/data/${sampleFile}).`);
       return loadSample(sampleFile);
@@ -181,10 +192,25 @@ function menuCollection(table: string, sampleFile: string) {
   });
 }
 
+// Every Airtable column name loadFromAirtable() ever reads, across every
+// table. When a table doesn't have one of these columns (e.g. Refreshers has
+// no "Roast"), pass menuCollection() the subset that table actually has —
+// see `refreshers` below.
+const ALL_MENU_FIELDS = [
+  'Name', 'Collection', 'Roast', 'Description', 'Price', 'Release Date',
+  'Order', 'Available', 'Seasonal', 'Photo', 'Image',
+  'Hot Coffee Image', 'Iced Coffee Image',
+];
+
 // One collection per page. The string is the exact Airtable table name.
 export const collections = {
   coffee: menuCollection('Coffees', 'sample-coffee.json'),
-  refreshers: menuCollection('Refreshers', 'sample-refreshers.json'),
+  // Refreshers has no "Roast" column — request everything else.
+  refreshers: menuCollection(
+    'Refreshers',
+    'sample-refreshers.json',
+    ALL_MENU_FIELDS.filter((f) => f !== 'Roast'),
+  ),
   // beans:  menuCollection('Coffee Beans', 'sample-beans.json'),
   // syrups: menuCollection('House Syrups', 'sample-syrups.json'),
 };
