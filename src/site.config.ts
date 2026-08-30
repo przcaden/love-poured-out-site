@@ -19,8 +19,8 @@ export const nav: { label: string; href: string | null }[] = [
   { label: 'Home', href: '/' },
   { label: 'Our Story', href: null },
   { label: 'Coffees', href: '/coffee' },
-  { label: 'Coffee Beans', href: '/beans' },
   { label: 'Refreshers', href: '/refreshers' },
+  { label: 'Coffee Beans', href: '/beans' },
   { label: 'Syrups', href: '/syrups' },
   { label: 'Contact', href: null },
 ];

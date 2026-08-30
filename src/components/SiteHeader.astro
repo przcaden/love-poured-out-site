@@ -13,17 +13,28 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     </a>
 
     <nav class="nav__links" aria-label="Primary">
-      {nav.map((item) =>
-        item.href ? (
-          <a
-            class:list={['nav__link', isActive(item.href) && 'is-active']}
-            href={item.href}
-            aria-current={isActive(item.href) ? 'page' : undefined}
-          >{item.label}</a>
-        ) : (
-          <span class="nav__link is-disabled" aria-disabled="true">{item.label}</span>
-        )
-      )}
+      {nav.map((item) => (
+        <>
+          {item.href ? (
+            <a
+              class:list={['nav__link', isActive(item.href) && 'is-active']}
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >{item.label}</a>
+          ) : (
+            <span class="nav__link is-disabled" aria-disabled="true">{item.label}</span>
+          )}
+          {/* Forces a line break right after Refreshers, so the row always
+              reads as two balanced lines (Home/Our Story/Coffees/Refreshers,
+              then Coffee Beans/Syrups/Contact) instead of drifting to a
+              lopsided 5-then-2 split — or all seven on one line — as the
+              viewport gets wider. A zero-height, full-width flex item forces
+              everything after it onto the next line; harmless once this row
+              is hidden below the mobile breakpoint in favor of the hamburger
+              menu. Update this label if the nav is reordered again. */}
+          {item.label === 'Refreshers' && <span class="nav__break" aria-hidden="true"></span>}
+        </>
+      ))}
     </nav>
 
     <SocialIcons class="nav__socials" />

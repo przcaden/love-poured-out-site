@@ -222,6 +222,13 @@ img { max-width: 100%; display: block; object-fit: contain; }
   justify-content: center;
   gap: 0.4rem 1.4rem;
 }
+/* zero-size, full-width flex item — forces everything after it in .nav__links
+   onto a new line, regardless of how much room is left on the current one */
+.nav__break {
+  flex-basis: 100%;
+  width: 0;
+  height: 0;
+}
 .nav__link {
   font-family: var(--display);
   font-weight: 600;
